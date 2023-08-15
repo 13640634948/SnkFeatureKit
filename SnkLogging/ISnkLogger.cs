@@ -4,6 +4,16 @@ namespace SnkFeatureKit.Logging
 {
     public interface ISnkLogger
     {
+        bool IsDebugEnabled { get; }
+
+        bool IsInfoEnabled { get; }
+
+        bool IsWarnEnabled { get; }
+
+        bool IsErrorEnabled { get; }
+
+        bool IsFatalEnabled { get; }
+        
         void Debug(object message);
 
         void Debug(object message, Exception exception);
@@ -38,15 +48,5 @@ namespace SnkFeatureKit.Logging
 
         void FatalFormat(string format, params object[] args);
 
-
-        bool IsDebugEnabled { get; }
-
-        bool IsInfoEnabled { get; }
-
-        bool IsWarnEnabled { get; }
-
-        bool IsErrorEnabled { get; }
-
-        bool IsFatalEnabled { get; }
     }
 }
