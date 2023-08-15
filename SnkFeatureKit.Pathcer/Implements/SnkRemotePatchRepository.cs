@@ -32,7 +32,7 @@ namespace SnkFeatureKit.Patcher
             private int _maxThreadNumber;
             private int _threadTickInterval = 100;
             private long _currDownloadedSize;
-            private object _locker = new object();
+            private readonly object _locker = new object();
             public long DownloadedSize
             {
                 get
@@ -139,7 +139,7 @@ namespace SnkFeatureKit.Patcher
 
             public bool TryGetSourceInfo(string key, out SnkSourceInfo sourceInfo)
             {
-                sourceInfo = default;
+                sourceInfo = new SnkSourceInfo();
                 var index = this._sourceInfoList.FindIndex(a => a.key.Equals(key));
                 if (index < 0)
                     return false;

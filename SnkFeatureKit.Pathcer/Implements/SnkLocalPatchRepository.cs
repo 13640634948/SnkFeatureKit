@@ -102,7 +102,7 @@ namespace SnkFeatureKit.Patcher
 
             public bool TryGetSourceInfo(string key, out SnkSourceInfo sourceInfo)
             {
-                sourceInfo = default;
+                sourceInfo = new SnkSourceInfo();
                 var index = this.sourceInfoList.FindIndex(a => a.key.Equals(key));
                 if (index < 0)
                     return false;

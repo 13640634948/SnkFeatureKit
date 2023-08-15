@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -24,13 +23,17 @@ namespace SnkFeatureKit.Patcher
             uri = uri.FixSlash();
             return await Task.Run(() =>
             {
-                SnkHttpHeadResult result = default;
+                SnkHttpHeadResult result = null;
                 var code = SNK_HTTP_ERROR_CODE.succeed;
                 var httpCode = HttpStatusCode.OK;
                 Exception exception = null;
                 var length = 0L;
                 try
                 {
+                    var request = WebRequest.CreateHttp(uri);
+                    request.Method = "HEAD";
+
+                    
                     var httpClient = new HttpClient();
                     if (timeout != default)
                     {
@@ -80,7 +83,7 @@ namespace SnkFeatureKit.Patcher
             uri = uri.FixSlash();
             return await Task.Run(() =>
             {
-                SnkHttpGetResult result = default;
+                SnkHttpGetResult result = null;
                 var code = SNK_HTTP_ERROR_CODE.succeed;
                 var httpCode = HttpStatusCode.OK;
                 Exception exception = null;
@@ -93,7 +96,7 @@ namespace SnkFeatureKit.Patcher
                     {
                         httpClient.Timeout = timeout;
                     }
-
+                    
                     using (var hrm = new HttpRequestMessage(HttpMethod.Get, uri))
                     {
                         using (var rsp = httpClient.SendAsync(hrm).Result)
@@ -126,8 +129,7 @@ namespace SnkFeatureKit.Patcher
         /// <param name="content"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static async Task<SnkHttpPostResult> Post(string uri, HttpContent content,
-            CancellationTokenSource cts)
+        public static async Task<SnkHttpPostResult> Post(string uri, HttpContent content, CancellationTokenSource cts)
         {
             uri = uri.FixSlash();
             SnkHttpPostResult result = default;

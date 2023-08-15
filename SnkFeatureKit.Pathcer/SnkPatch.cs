@@ -43,8 +43,9 @@ namespace SnkFeatureKit.Patcher
                 if(sourceInfoList == null || sourceInfoList.Count == 0)
                     return string.Empty;
                 var stringBuilder = new StringBuilder();
-                for (int i = 0;i< sourceInfoList.Count;i++)
-                    stringBuilder.AppendLine(sourceInfoList[i].ToString());
+                foreach (var t in sourceInfoList)
+                    stringBuilder.AppendLine(t.ToString());
+
                 return stringBuilder.ToString().Trim();
 
             }
@@ -67,7 +68,8 @@ namespace SnkFeatureKit.Patcher
 
             public static async Task<List<SnkSourceInfo>> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, Dictionary<string,string> keyPathMapping = null)
             {
-                if (fileFinder.TrySurvey(out var fileInfos) == false)
+                FileInfo[] fileInfos = null;
+                if (fileFinder.TrySurvey(out fileInfos) == false)
                 {
                     SnkLogHost.Default?.WarnFormat("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
                     return null;
@@ -94,7 +96,8 @@ namespace SnkFeatureKit.Patcher
 
                         if (taskList.Count < threadNumber && fileInfoBag.Count > 0)
                         {
-                            if (fileInfoBag.TryTake(out var fileInfo) == false)
+                            FileInfo fileInfo = null;
+                            if (fileInfoBag.TryTake(out fileInfo) == false)
                                 continue;
 
                             var task = Task.Run(() => 
@@ -138,7 +141,8 @@ namespace SnkFeatureKit.Patcher
             {
                 foreach (var sourceInfo in sourceInfoList)
                 {
-                    if (keyPathMapping.TryGetValue(sourceInfo.key, out string fullPath))
+                    string fullPath = string.Empty;
+                    if (keyPathMapping.TryGetValue(sourceInfo.key, out fullPath))
                     {
                         var fromFileInfo = new System.IO.FileInfo(fullPath);
                         var toFileInfo = new System.IO.FileInfo(System.IO.Path.Combine(toDirectoryFullPath, sourceInfo.key));
