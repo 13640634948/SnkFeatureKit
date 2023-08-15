@@ -1,4 +1,4 @@
-﻿using SnkToolKit.Features.Patcher.Extension;
+﻿using SnkFeatureKit.Patcher.Extension;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     /// <summary>
     /// web请求

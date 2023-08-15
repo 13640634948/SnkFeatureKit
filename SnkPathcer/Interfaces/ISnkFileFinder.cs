@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     namespace Interfaces
     {

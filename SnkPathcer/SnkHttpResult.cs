@@ -2,7 +2,7 @@
 using System.Net;
 using System;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     /// <summary>
     /// http结果

@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SnkToolKit.Features.Logging;
-using SnkToolKit.Features.Patcher.Interfaces;
+using SnkFeatureKit.Logging;
+using SnkFeatureKit.Patcher.Interfaces;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     public class SnkPatchBuilder
     {

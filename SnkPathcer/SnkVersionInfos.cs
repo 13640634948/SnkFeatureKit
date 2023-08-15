@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     [Serializable]
     public class SnkVersionInfos

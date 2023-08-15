@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
 
-using SnkToolKit.Features.Logging;
-using SnkToolKit.Features.Patcher.Interfaces;
+using SnkFeatureKit.Logging;
+using SnkFeatureKit.Patcher.Interfaces;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     namespace Implements
     {
@@ -74,7 +74,7 @@ namespace SnkToolKit.Features.Patcher
                 else
                 {
                     if (s_log.IsErrorEnabled)
-                        s_log.Error($"Ã»ÓÐÕÒµ½¶ÔÓ¦µÄ²Ù×÷¶ÔÏó¡£add:{add}, sourceInfo:{sourceInfo}");
+                        s_log.Error($"Ã»ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½Ó¦ï¿½Ä²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½add:{add}, sourceInfo:{sourceInfo}");
                 }
                 SaveSourceInfo();
             }

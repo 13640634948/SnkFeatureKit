@@ -1,4 +1,4 @@
-﻿namespace SnkToolKit.Features.Patcher
+﻿namespace SnkFeatureKit.Patcher
 {
     namespace Extension
     {

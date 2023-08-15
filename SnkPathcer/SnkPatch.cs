@@ -5,13 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SnkFeatureKit.Logging;
+using SnkFeatureKit.Patcher.Extension;
+using SnkFeatureKit.Patcher.Interfaces;
+using SnkFeatureKit.Patcher.Implements;
 
-using SnkToolKit.Features.Logging;
-using SnkToolKit.Features.Patcher.Extension;
-using SnkToolKit.Features.Patcher.Interfaces;
-using SnkToolKit.Features.Patcher.Implements;
-
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
         public partial class SnkPatch
         {

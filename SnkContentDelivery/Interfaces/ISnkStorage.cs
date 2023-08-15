@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SnkToolKit.Features.ContentDelivery
+namespace SnkFeatureKit.ContentDelivery
 {
     namespace Interfaces
     {

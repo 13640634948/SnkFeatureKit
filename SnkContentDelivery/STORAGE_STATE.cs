@@ -1,4 +1,4 @@
-namespace SnkToolKit.Features.ContentDelivery
+namespace SnkFeatureKit.ContentDelivery
 {
     public enum STORAGE_STATE
     {

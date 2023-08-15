@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using SnkToolKit.Features.ContentDelivery.Interfaces;
+using SnkFeatureKit.ContentDelivery.Interfaces;
 
-namespace SnkToolKit.Features.ContentDelivery
+namespace SnkFeatureKit.ContentDelivery
 {
     namespace Abstract
     {

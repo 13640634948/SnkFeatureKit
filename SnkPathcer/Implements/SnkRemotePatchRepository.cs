@@ -6,10 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-using SnkToolKit.Features.Logging;
-using SnkToolKit.Features.Patcher.Interfaces;
+using SnkFeatureKit.Logging;
+using SnkFeatureKit.Patcher.Interfaces;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     namespace Implements
     {

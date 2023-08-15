@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using COSXML.Auth;
 
-using SnkToolKit.Features.ContentDelivery.Abstract;
+using SnkFeatureKit.ContentDelivery.Abstract;
 
-namespace SnkToolKit.Features.ContentDelivery
+namespace SnkFeatureKit.ContentDelivery
 {
     namespace Implements
     {

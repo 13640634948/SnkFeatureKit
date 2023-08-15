@@ -2,10 +2,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System;
-using SnkToolKit.Features.Patcher.Extension;
-using SnkToolKit.Features.Patcher.Interfaces;
+using SnkFeatureKit.Patcher.Extension;
+using SnkFeatureKit.Patcher.Interfaces;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     namespace Implements
     {

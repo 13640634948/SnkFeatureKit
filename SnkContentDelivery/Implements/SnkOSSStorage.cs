@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SnkToolKit.Features.ContentDelivery.Abstract;
+using SnkFeatureKit.ContentDelivery.Abstract;
 
-namespace SnkToolKit.Features.ContentDelivery
+namespace SnkFeatureKit.ContentDelivery
 {
     namespace Implements
     {

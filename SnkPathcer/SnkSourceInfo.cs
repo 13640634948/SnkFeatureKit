@@ -1,4 +1,4 @@
-﻿namespace SnkToolKit.Features.Patcher
+﻿namespace SnkFeatureKit.Patcher
 {
     /// <summary>
     /// 补丁源(PatchSource)

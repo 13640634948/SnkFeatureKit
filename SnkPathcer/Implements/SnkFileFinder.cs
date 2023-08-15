@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 
-using SnkToolKit.Features.Patcher.Interfaces;
+using SnkFeatureKit.Patcher.Interfaces;
 
-namespace SnkToolKit.Features.Patcher
+namespace SnkFeatureKit.Patcher
 {
     namespace Implements
     {
