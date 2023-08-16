@@ -76,7 +76,7 @@ namespace SnkFeatureKit.Patcher
                 else
                 {
                     //if (s_log.IsErrorEnabled)
-                        s_log.Error($"û���ҵ���Ӧ�Ĳ�������add:{add}, sourceInfo:{sourceInfo}");
+                        s_log?.Error($"û���ҵ���Ӧ�Ĳ�������add:{add}, sourceInfo:{sourceInfo}");
                 }
                 SaveSourceInfo();
             }
