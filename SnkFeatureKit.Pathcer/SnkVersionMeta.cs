@@ -7,7 +7,6 @@ namespace SnkFeatureKit.Patcher
         public int count;
         public string code;
 
-        /*
         public override string ToString()
         {
             return $"{version}|{size}|{count}|{code}";
@@ -44,6 +43,5 @@ namespace SnkFeatureKit.Patcher
             meta.code = array[3];
             return meta;
         }
-        */
     }
 }

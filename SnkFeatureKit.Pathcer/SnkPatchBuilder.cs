@@ -27,12 +27,15 @@ namespace SnkFeatureKit.Patcher
             var fileInfo = new FileInfo(Path.Combine(appVersionPath, _settings.versionInfoFileName));
             if (fileInfo.Exists == false)
             {
-                return new SnkVersionInfos { histories = new List<SnkVersionMeta>() };
+                var versionInfos = new SnkVersionInfos
+                {
+                    histories = new List<SnkVersionMeta>()
+                };
+                return versionInfos;
             }
 
-            var json = File.ReadAllText(fileInfo.FullName);
-            //return SnkVersionInfos.ValueOf(json);
-            return SnkPatch.JsonParser.FromJson<SnkVersionInfos>(json);
+            var jsonString = File.ReadAllText(fileInfo.FullName);
+            return SnkVersionInfos.ValueOf(jsonString);
         }
 
         public async Task<SnkVersionMeta> Build(List<ISnkFileFinder> finderList, System.Func<string, bool> overrideReadOnlyFile = null)

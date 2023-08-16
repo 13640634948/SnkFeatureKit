@@ -46,9 +46,8 @@ namespace SnkFeatureKit.Patcher
                 }
                 else
                 {
-                    var json = File.ReadAllText(fileInfo.FullName).Trim();
-                    //this._localSourceInfos = SnkLocalSourceInfos.ValueOf(text);
-                    this._localSourceInfos = SnkPatch.JsonParser.FromJson<SnkLocalSourceInfos>(json);
+                    string text = File.ReadAllText(fileInfo.FullName).Trim();
+                    this._localSourceInfos = SnkLocalSourceInfos.ValueOf(text);
                 }
                 return Task.FromResult(true);
             }

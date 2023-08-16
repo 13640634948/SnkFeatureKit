@@ -17,7 +17,6 @@ namespace SnkFeatureKit.Patcher
         /// </summary>
         public List<SnkVersionMeta> histories;
 
-        /*
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
@@ -56,6 +55,6 @@ namespace SnkFeatureKit.Patcher
             }
 
             return infos;
-        }*/
+        }
     }
 }    

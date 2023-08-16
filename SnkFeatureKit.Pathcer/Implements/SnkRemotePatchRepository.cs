@@ -103,10 +103,9 @@ namespace SnkFeatureKit.Patcher
                         s_log?.Error($"获取远端版本信息失败。URL:{url}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
                         return false;
                     }
-                    
-                    //var content = result.ContentData;
-                    //_versionInfos = SnkVersionInfos.ValueOf(content);
-                    _versionInfos = SnkPatch.JsonParser.FromJson<SnkVersionInfos>(result.ContentData);
+                    var content = result.ContentData;
+
+                    _versionInfos = SnkVersionInfos.ValueOf(content);
 
                     var lastVersionIndex = _versionInfos.histories.Count - 1;
                     Version = _versionInfos.histories[lastVersionIndex].version;

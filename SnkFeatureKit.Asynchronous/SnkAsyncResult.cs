@@ -6,218 +6,219 @@ using SnkFeatureKit.Asynchronous.Internals;
 namespace SnkFeatureKit.Asynchronous
 {
     public class SnkAsyncResult : ISnkAsyncResult, ISnkPromise
-    {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(AsyncResult));
-
-        private bool done = false;
-        private object result = null;
-        private Exception exception = null;
-
-        private bool cancelled = false;
-        protected bool cancelable = false;
-        protected bool cancellationRequested;
-
-        protected readonly object _lock = new object();
-
-        private SnkSynchronizable synchronizable;
-        private SnkCallbackable callbackable;
-
-        public SnkAsyncResult() : this(false)
         {
-        }
+            //private static readonly ILog log = LogManager.GetLogger(typeof(AsyncResult));
 
-        public SnkAsyncResult(bool cancelable)
-        {
-            this.cancelable = cancelable;
-        }
+            private bool done = false;
+            private object result = null;
+            private Exception exception = null;
 
-        /// <summary>
-        /// Exception
-        /// </summary>
-        public virtual Exception Exception => this.exception;
+            private bool cancelled = false;
+            protected bool cancelable = false;
+            protected bool cancellationRequested;
 
-        /// <summary>
-        /// Returns  "true" if this task finished.
-        /// </summary>
-        public virtual bool IsDone => this.done;
+            protected readonly object _lock = new object();
 
-        /// <summary>
-        /// The execution result
-        /// </summary>
-        public virtual object Result => this.result;
+            private SnkSynchronizable synchronizable;
+            private SnkCallbackable callbackable;
 
-        public virtual bool IsCancellationRequested => this.cancellationRequested;
+            public SnkAsyncResult() : this(false)
+            {
+            }
 
-        /// <summary>
-        /// Returns "true" if this task was cancelled before it completed normally.
-        /// </summary>
-        public virtual bool IsCancelled => this.cancelled;
+            public SnkAsyncResult(bool cancelable)
+            {
+                this.cancelable = cancelable;
+            }
 
-        public virtual void SetException(string error)
-        {
-            if (this.done)
-                return;
+            /// <summary>
+            /// Exception
+            /// </summary>
+            public virtual Exception Exception => this.exception;
 
-            var exception = new Exception(string.IsNullOrEmpty(error) ? "unknown error!" : error);
-            SetException(exception);
-        }
+            /// <summary>
+            /// Returns  "true" if this task finished.
+            /// </summary>
+            public virtual bool IsDone => this.done;
 
-        public virtual void SetException(Exception exception)
-        {
-            lock (_lock)
+            /// <summary>
+            /// The execution result
+            /// </summary>
+            public virtual object Result => this.result; 
+
+            public virtual bool IsCancellationRequested => this.cancellationRequested;
+
+            /// <summary>
+            /// Returns "true" if this task was cancelled before it completed normally.
+            /// </summary>
+            public virtual bool IsCancelled => this.cancelled;
+
+            public virtual void SetException(string error)
             {
                 if (this.done)
                     return;
 
-                this.exception = exception;
-                this.done = true;
-                Monitor.PulseAll(_lock);
+                var exception = new Exception(string.IsNullOrEmpty(error) ? "unknown error!" : error);
+                SetException(exception);
             }
 
-            this.RaiseOnCallback();
-        }
-
-        public virtual void SetResult(object result = null)
-        {
-            lock (_lock)
+            public virtual void SetException(Exception exception)
             {
-                if (this.done)
-                    return;
+                lock (_lock)
+                {
+                    if (this.done)
+                        return;
 
-                this.result = result;
-                this.done = true;
-                Monitor.PulseAll(_lock);
+                    this.exception = exception;
+                    this.done = true;
+                    Monitor.PulseAll(_lock);
+                }
+
+                this.RaiseOnCallback();
             }
 
-            this.RaiseOnCallback();
-        }
-
-        public virtual void SetCancelled()
-        {
-            lock (_lock)
+            public virtual void SetResult(object result = null)
             {
-                if (!this.cancelable || this.done)
-                    return;
+                lock (_lock)
+                {
+                    if (this.done)
+                        return;
 
-                this.cancelled = true;
-                this.exception = new OperationCanceledException();
-                this.done = true;
-                Monitor.PulseAll(_lock);
+                    this.result = result;
+                    this.done = true;
+                    Monitor.PulseAll(_lock);
+                }
+
+                this.RaiseOnCallback();
             }
 
-            this.RaiseOnCallback();
-        }
-
-        /// <summary>
-        /// Attempts to cancel execution of this task.  This attempt will 
-        /// fail if the task has already completed, has already been cancelled,
-        /// or could not be cancelled for some other reason.If successful,
-        /// and this task has not started when "Cancel" is called,
-        /// this task should never run. 
-        /// </summary>
-        /// <exception cref="NotSupportedException">If not supported, throw an exception.</exception>
-        /// <returns></returns>
-        public virtual bool Cancel()
-        {
-            if (!this.cancelable)
-                throw new NotSupportedException();
-
-            if (this.IsDone)
-                return false;
-
-            this.cancellationRequested = true;
-            this.SetCancelled();
-            return true;
-        }
-
-        protected virtual void RaiseOnCallback()
-        {
-            if (this.callbackable != null)
-                this.callbackable.RaiseOnCallback();
-        }
-
-        public virtual ISnkCallbackable Callbackable()
-        {
-            lock (_lock)
+            public virtual void SetCancelled()
             {
-                return this.callbackable ?? (this.callbackable = new SnkCallbackable(this));
-            }
-        }
+                lock (_lock)
+                {
+                    if (!this.cancelable || this.done)
+                        return;
 
-        public virtual ISnkSynchronizable Synchronized()
-        {
-            lock (_lock)
+                    this.cancelled = true;
+                    this.exception = new OperationCanceledException();
+                    this.done = true;
+                    Monitor.PulseAll(_lock);
+                }
+
+                this.RaiseOnCallback();
+            }
+
+            /// <summary>
+            /// Attempts to cancel execution of this task.  This attempt will 
+            /// fail if the task has already completed, has already been cancelled,
+            /// or could not be cancelled for some other reason.If successful,
+            /// and this task has not started when "Cancel" is called,
+            /// this task should never run. 
+            /// </summary>
+            /// <exception cref="NotSupportedException">If not supported, throw an exception.</exception>
+            /// <returns></returns>
+            public virtual bool Cancel()
             {
-                return this.synchronizable ?? (this.synchronizable = new SnkSynchronizable(this, this._lock));
+                if (!this.cancelable)
+                    throw new NotSupportedException();
+
+                if (this.IsDone)
+                    return false;
+
+                this.cancellationRequested = true;
+                this.SetCancelled();
+                return true;
             }
-        }
 
-        /// <summary>
-        /// Wait for the result,suspends the coroutine.
-        /// eg:
-        /// IAsyncResult result;
-        /// yiled return result.WaitForDone();
-        /// </summary>
-        /// <returns></returns>
-        public virtual object WaitForDone()
-        {
-            return SnkAsyncExecutor.WaitWhile(() => !IsDone);
-        }
-    }
-
-    public class SnkAsyncResult<TResult> : SnkAsyncResult, ISnkAsyncResult<TResult>, ISnkPromise<TResult>
-    {
-        //private static readonly ILog log = LogManager.GetLogger(typeof(AsyncResult<TResult>));
-
-        private SnkSynchronizable<TResult> synchronizable;
-        private SnkCallbackable<TResult> callbackable;
-
-        public SnkAsyncResult() : this(false)
-        {
-        }
-
-        public SnkAsyncResult(bool cancelable) : base(cancelable)
-        {
-        }
-
-        /// <summary>
-        /// The execution result
-        /// </summary>
-        public virtual new TResult Result
-        {
-            get
+            protected virtual void RaiseOnCallback()
             {
-                var result = base.Result;
-                return result != null ? (TResult)result : default(TResult);
+                if (this.callbackable != null)
+                    this.callbackable.RaiseOnCallback();
             }
-        }
 
-        public virtual void SetResult(TResult result)
-        {
-            base.SetResult(result);
-        }
-
-        protected override void RaiseOnCallback()
-        {
-            base.RaiseOnCallback();
-            if (this.callbackable != null)
-                this.callbackable.RaiseOnCallback();
-        }
-
-        public new virtual ISnkCallbackable<TResult> Callbackable()
-        {
-            lock (_lock)
+            public virtual ISnkCallbackable Callbackable()
             {
-                return this.callbackable ?? (this.callbackable = new SnkCallbackable<TResult>(this));
+                lock (_lock)
+                {
+                    return this.callbackable ?? (this.callbackable = new SnkCallbackable(this));
+                }
+            }
+
+            public virtual ISnkSynchronizable Synchronized()
+            {
+                lock (_lock)
+                {
+                    return this.synchronizable ?? (this.synchronizable = new SnkSynchronizable(this, this._lock));
+                }
+            }
+
+            /// <summary>
+            /// Wait for the result,suspends the coroutine.
+            /// eg:
+            /// IAsyncResult result;
+            /// yiled return result.WaitForDone();
+            /// </summary>
+            /// <returns></returns>
+            public virtual object WaitForDone()
+            {
+                return SnkAsyncExecutor.WaitWhile(() => !IsDone);
             }
         }
 
-        public new virtual ISnkSynchronizable<TResult> Synchronized()
+        public class SnkAsyncResult<TResult> : SnkAsyncResult, ISnkAsyncResult<TResult>, ISnkPromise<TResult>
         {
-            lock (_lock)
+            //private static readonly ILog log = LogManager.GetLogger(typeof(AsyncResult<TResult>));
+
+            private SnkSynchronizable<TResult> synchronizable;
+            private SnkCallbackable<TResult> callbackable;
+
+            public SnkAsyncResult() : this(false)
             {
-                return this.synchronizable ?? (this.synchronizable = new SnkSynchronizable<TResult>(this, this._lock));
+            }
+
+            public SnkAsyncResult(bool cancelable) : base(cancelable)
+            {
+            }
+
+            /// <summary>
+            /// The execution result
+            /// </summary>
+            public virtual new TResult Result
+            {
+                get
+                {
+                    var result = base.Result;
+                    return result != null ? (TResult)result : default(TResult);
+                }
+            }
+
+            public virtual void SetResult(TResult result)
+            {
+                base.SetResult(result);
+            }
+
+            protected override void RaiseOnCallback()
+            {
+                base.RaiseOnCallback();
+                if (this.callbackable != null)
+                    this.callbackable.RaiseOnCallback();
+            }
+
+            public new virtual ISnkCallbackable<TResult> Callbackable()
+            {
+                lock (_lock)
+                {
+                    return this.callbackable ?? (this.callbackable = new SnkCallbackable<TResult>(this));
+                }
+            }
+
+            public new virtual ISnkSynchronizable<TResult> Synchronized()
+            {
+                lock (_lock)
+                {
+                    return this.synchronizable ?? (this.synchronizable = new SnkSynchronizable<TResult>(this, this._lock));
+                }
             }
         }
-    }
+    
 }
