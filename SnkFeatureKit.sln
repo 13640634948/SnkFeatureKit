@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Logging", "Sn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Pathcer", "SnkFeatureKit.Pathcer\SnkFeatureKit.Pathcer.csproj", "{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Asynchronous", "SnkFeatureKit.Asynchronous\SnkFeatureKit.Asynchronous.csproj", "{5BB720EA-FA63-4725-8A00-EEF778F432CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BB720EA-FA63-4725-8A00-EEF778F432CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BB720EA-FA63-4725-8A00-EEF778F432CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BB720EA-FA63-4725-8A00-EEF778F432CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BB720EA-FA63-4725-8A00-EEF778F432CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
