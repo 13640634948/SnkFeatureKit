@@ -113,7 +113,7 @@ namespace SnkFeatureKit.Patcher
                     var lastVersionIndex = _versionInfos.histories.Count - 1;
                     Version = _versionInfos.histories[lastVersionIndex].version;
 
-                    if (s_log.IsInfoEnabled)
+                    //if (s_log.IsInfoEnabled)
                     {
                         var initializeLog = new StringBuilder();
                         initializeLog.AppendLine($"[RemoteInit]AppVersion:{_versionInfos.appVersion}");
@@ -129,7 +129,7 @@ namespace SnkFeatureKit.Patcher
                 {
                     IsError = true;
                     ExceptionString = "初始化远端仓库出现未知异常";
-                    if (s_log.IsErrorEnabled)
+                    //if (s_log.IsErrorEnabled)
                         s_log?.Error($"[Exception]\n{exception.Message}\n{exception.StackTrace}");
                     return false;
                 }
@@ -223,7 +223,7 @@ namespace SnkFeatureKit.Patcher
 
             public async Task<bool> StartupDownload(System.Action<string> onPreDownloadTask)
             {
-                if (s_log.IsInfoEnabled)
+                //if (s_log.IsInfoEnabled)
                     s_log?.Info($"[StartDownload] thread number:{this._maxThreadNumber}");
 
                 StartRecordDownloadSpeed();
@@ -292,8 +292,8 @@ namespace SnkFeatureKit.Patcher
 
             private void PrintDownloadInfo()
             {
-                if (!s_log.IsInfoEnabled)
-                    return;
+                //if (!s_log.IsInfoEnabled)
+                //    return;
                 var exceptionCnt = _exceptionQueue.Count;
                 var downloadingCnt = _downloadingList.Count;
 
@@ -322,7 +322,7 @@ namespace SnkFeatureKit.Patcher
 
                     if (_exceptionQueue.Count == 0) return null;
 
-                    if (s_log.IsInfoEnabled)
+                    //if (s_log.IsInfoEnabled)
                     {
                         var taskKey = $"[回收异常下载任务]数量：{_exceptionQueue.Count}\n";
                         taskKey = _exceptionQueue.Aggregate(taskKey, (current, task) => $"{current}{task.Item1}\n");

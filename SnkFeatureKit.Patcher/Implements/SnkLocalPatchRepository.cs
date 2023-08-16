@@ -56,7 +56,7 @@ namespace SnkFeatureKit.Patcher
 
             public virtual Task<List<SnkSourceInfo>> GetSourceInfoList(ushort version = 0)
             {
-                if (s_log.IsInfoEnabled)
+                //if (s_log.IsInfoEnabled)
                     s_log?.Info($"[RemoteRepo]GetSourceInfoList.fromVersion:{version}");
                 return Task.FromResult(sourceInfoList);
             }
@@ -75,7 +75,7 @@ namespace SnkFeatureKit.Patcher
                 }
                 else
                 {
-                    if (s_log.IsErrorEnabled)
+                    //if (s_log.IsErrorEnabled)
                         s_log.Error($"û���ҵ���Ӧ�Ĳ�������add:{add}, sourceInfo:{sourceInfo}");
                 }
                 SaveSourceInfo();

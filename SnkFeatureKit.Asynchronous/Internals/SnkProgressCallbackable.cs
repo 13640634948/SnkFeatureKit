@@ -173,14 +173,14 @@ namespace SnkFeatureKit.Asynchronous
                             }
                             catch (Exception e)
                             {
-                                if (s_log.IsWarnEnabled)
+                                //if (s_log.IsWarnEnabled)
                                     s_log?.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        if (s_log.IsWarnEnabled)
+                        //if (s_log.IsWarnEnabled)
                             s_log?.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                     }
                     finally
@@ -208,14 +208,14 @@ namespace SnkFeatureKit.Asynchronous
                             }
                             catch (Exception e)
                             {
-                                if (s_log.IsWarnEnabled)
+                                //if (s_log.IsWarnEnabled)
                                     s_log?.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        if (s_log.IsWarnEnabled)
+                        //if (s_log.IsWarnEnabled)
                             s_log?.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                     }
                 }
@@ -236,7 +236,7 @@ namespace SnkFeatureKit.Asynchronous
                         }
                         catch (Exception e)
                         {
-                            if (s_log.IsWarnEnabled)
+                            //if (s_log.IsWarnEnabled)
                                 s_log?.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                         }
                         return;
@@ -261,7 +261,7 @@ namespace SnkFeatureKit.Asynchronous
                         }
                         catch (Exception e)
                         {
-                            if (s_log.IsWarnEnabled)
+                            //if (s_log.IsWarnEnabled)
                                 s_log?.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                         }
                         return;
