@@ -63,6 +63,11 @@ namespace SnkFeatureKit.Patcher
 
             public virtual void UpdateLocalSourceInfo(SnkSourceInfo sourceInfo, bool add = true)
             {
+                if (this.sourceInfoList == null)
+                {
+                    throw new System.NullReferenceException("sourceInfoList is null");
+                }
+
                 var index = this.sourceInfoList.FindIndex(a => a.key == sourceInfo.key);
 
                 if (add && index < 0)
