@@ -285,6 +285,7 @@ namespace SnkFeatureKit.Patcher
                     catch (Exception ex)
                     {
                         s_log?.Error(ex);
+                        throw;
                     }
                     return true;
                 });
