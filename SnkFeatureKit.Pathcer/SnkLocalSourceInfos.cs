@@ -14,6 +14,7 @@ namespace SnkFeatureKit.Patcher
             /// </summary>
             public List<SnkSourceInfo> localSourceInfoList;
 
+            /*
             public override string ToString()
             {
                 var stringBuilder = new StringBuilder();
@@ -52,6 +53,7 @@ namespace SnkFeatureKit.Patcher
                 }
 
                 return infos;
-        }
+            }
+            */
     }
 }

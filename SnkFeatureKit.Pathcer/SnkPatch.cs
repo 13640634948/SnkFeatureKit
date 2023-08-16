@@ -12,9 +12,16 @@ using SnkFeatureKit.Patcher.Implements;
 
 namespace SnkFeatureKit.Patcher
 {
-        public partial class SnkPatch
+        public class SnkPatch
         {
             public static ISnkCodeGenerator codeGenerator = new SnkMD5Generator();
+
+            internal static ISnkJsonParser JsonParser;
+
+            public static void Initialization<TJsonParser>() where TJsonParser : ISnkJsonParser,new()
+            {
+                JsonParser = new TJsonParser();
+            }
 
             public static List<SnkSourceInfo> SnkSourceInfoListValueOf(string content)
             {
@@ -23,6 +30,8 @@ namespace SnkFeatureKit.Patcher
                 if (string.IsNullOrEmpty(tmpContent))
                     return sourceInfoList;
 
+                sourceInfoList = JsonParser.FromJson<List<SnkSourceInfo>>(tmpContent);
+                /*
                 var array = tmpContent.Trim().Split('\n');
                 if (array.Length <= 0)
                 {
@@ -35,11 +44,14 @@ namespace SnkFeatureKit.Patcher
                         sourceInfoList.Add(SnkSourceInfo.ValueOf(array[i].Trim()));
                     }
                 }
+                */
                 return sourceInfoList;
             }
 
             public static string SnkSourceInfoListToString(List<SnkSourceInfo> sourceInfoList)
             {
+                return JsonParser.ToJson(sourceInfoList);
+                /*
                 if(sourceInfoList == null || sourceInfoList.Count == 0)
                     return string.Empty;
                 var stringBuilder = new StringBuilder();
@@ -47,7 +59,7 @@ namespace SnkFeatureKit.Patcher
                     stringBuilder.AppendLine(t.ToString());
 
                 return stringBuilder.ToString().Trim();
-
+                */
             }
 
             public static SnkPatchBuilder CreatePatchBuilder(string projPath, string channelName, int appVersion, SnkPatchSettings settings = null)

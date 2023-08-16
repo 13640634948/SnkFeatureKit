@@ -25,6 +25,7 @@
         /// </summary>
         public string code;
 
+        /*
         public override string ToString()
         {
             return $"{key}|{version}|{size}|{code}";
@@ -62,5 +63,6 @@
             sourceInfo.code = array[3];
             return sourceInfo;
         }
+        */
     }
 }    

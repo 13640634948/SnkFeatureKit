@@ -33,7 +33,7 @@ namespace SnkFeatureKit.Patcher
 
             public STATE status { get; private set; }
 
-            private bool _initializd = false;
+            private bool _initialized = false;
 
             public virtual string ChannelName => this._settings.channelName;
             public virtual int AppVersion => this._settings.appVersion;
@@ -95,12 +95,12 @@ namespace SnkFeatureKit.Patcher
                     throw new System.Exception(this._remoteRepo.ExceptionString);
                 }
                 status = STATE.initialized;
-                _initializd = true;
+                _initialized = true;
             }
 
             private async Task ValidityInitialization()
             {
-                if (this._initializd == false)
+                if (this._initialized == false)
                 {
                     if (this.status == STATE.none)
                         await this.Initialize();
