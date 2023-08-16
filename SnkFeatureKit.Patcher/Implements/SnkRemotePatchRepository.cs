@@ -122,7 +122,7 @@ namespace SnkFeatureKit.Patcher
                             initializeLog.AppendLine($"[RemoteInit]AppVersion:{a.version}|{a.size}|{a.count}|{a.code}");
                         }
                         initializeLog.AppendLine($"[RemoteInit]Version:{Version}");
-                        s_log.Info(initializeLog.ToString());
+                        s_log?.Info(initializeLog.ToString());
                     }
                 }
                 catch (Exception exception)
