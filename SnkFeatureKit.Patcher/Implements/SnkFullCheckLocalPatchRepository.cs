@@ -71,7 +71,9 @@ namespace SnkFeatureKit.Patcher
                 {
                     Console.WriteLine(ex.ToString());
                 }
-                return bag.ToList();
+
+                _sourceInfoList = bag.ToList();
+                return _sourceInfoList;
             }
         }
     }
