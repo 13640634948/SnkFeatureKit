@@ -4,7 +4,12 @@ namespace SnkFeatureKit.Logging
 {
     public class SnkLogFactory : ISnkLogFactory
     {
-        public SnkLogLevel Level => throw new NotImplementedException();
+        protected SnkLogLevel _level = SnkLogLevel.DEBUG;
+        public SnkLogLevel Level
+        {
+            get => _level;
+            set => _level = value;
+        }
 
         public virtual ISnkLogger GetLogger(string name) => new SnkConsoleLog(name, this);
         public virtual ISnkLogger GetLogger<T>() => GetLogger(typeof(T).FullName);

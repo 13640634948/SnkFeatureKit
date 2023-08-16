@@ -4,7 +4,6 @@ namespace SnkFeatureKit.Logging
 {
     public abstract class SnkLogger : ISnkLogger 
     {
-        
         public abstract void Debug(object message);
         public abstract void Info(object message);
         public abstract void Warn(object message);
@@ -20,7 +19,7 @@ namespace SnkFeatureKit.Logging
             this._factory = factory;
         }
         
-        private bool IsEnabled(SnkLogLevel level) => SnkLogLevel.DEBUG >= this._factory.Level;
+        private bool IsEnabled(SnkLogLevel level) => level >= this._factory.Level;
 
         protected virtual string Format(object message, string level)
             => $"{System.DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] {_name} - {message}";
