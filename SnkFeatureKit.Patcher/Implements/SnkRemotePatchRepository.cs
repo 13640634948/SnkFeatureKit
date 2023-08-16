@@ -323,13 +323,15 @@ namespace SnkFeatureKit.Patcher
                     if (_exceptionQueue.Count == 0) 
                         return null;
 
-                    //if (s_log.IsInfoEnabled)
+                    /*
+                    if (s_log.IsInfoEnabled)
                     {
                         var taskKey = $"[回收异常下载任务]数量：{_exceptionQueue.Count}\n";
                         taskKey = _exceptionQueue.Aggregate(taskKey, (current, task) => $"{current}{task.Item1}\n");
                         s_log.Info(taskKey.Trim());
                     }
-
+                    */
+                    
                     while (_exceptionQueue.Count > 0) _willDownloadTaskQueue.Enqueue(_exceptionQueue.Dequeue());
                 }
             }
