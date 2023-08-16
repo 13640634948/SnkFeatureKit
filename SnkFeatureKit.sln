@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.ContentDelive
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Logging", "SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj", "{9DCF2FD8-18AA-461E-97C9-BCD18E31C74D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Pathcer", "SnkFeatureKit.Pathcer\SnkFeatureKit.Pathcer.csproj", "{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Patcher", "SnkFeatureKit.Patcher\SnkFeatureKit.Patcher.csproj", "{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Asynchronous", "SnkFeatureKit.Asynchronous\SnkFeatureKit.Asynchronous.csproj", "{5BB720EA-FA63-4725-8A00-EEF778F432CB}"
 EndProject

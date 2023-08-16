@@ -8,7 +8,7 @@
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>SnkPathcer</RootNamespace>
-        <AssemblyName>SnkFeatureKit.Pathcer</AssemblyName>
+        <AssemblyName>SnkFeatureKit.Patcher</AssemblyName>
         <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>6</LangVersion>

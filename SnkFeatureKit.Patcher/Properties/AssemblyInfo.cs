@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SnkFeatureKit.Pathcer")]
+[assembly: AssemblyTitle("SnkFeatureKit.Patcher")]
 [assembly: AssemblyDescription("Snk功能插件包")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ClaineLe")]
-[assembly: AssemblyProduct("SnkFeatureKit.Pathcer")]
+[assembly: AssemblyProduct("SnkFeatureKit.Patcher")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
