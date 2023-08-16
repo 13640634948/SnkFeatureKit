@@ -74,7 +74,7 @@ namespace SnkFeatureKit.Patcher
         /// <summary>
         /// 返回的数据
         /// </summary>
-        public byte[] Data { get; }
+        public string ContentData { get; }
 
         /// <summary>
         /// 构造方法
@@ -83,9 +83,9 @@ namespace SnkFeatureKit.Patcher
         /// <param name="statusCode"></param>
         /// <param name="errorMessage"></param>
         /// <param name="data"></param>
-        public SnkHttpGetResult(SNK_HTTP_ERROR_CODE code, HttpStatusCode statusCode, Exception exception, byte[] data) : base(code, statusCode, exception)
+        public SnkHttpGetResult(SNK_HTTP_ERROR_CODE code, HttpStatusCode statusCode, Exception exception, string contentData) : base(code, statusCode, exception)
         {
-            Data = data;
+            ContentData = contentData;
         }
     }
 

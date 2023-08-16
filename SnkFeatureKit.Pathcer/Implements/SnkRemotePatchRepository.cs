@@ -95,7 +95,7 @@ namespace SnkFeatureKit.Patcher
                     this._patchCtrl = patchController;
                     var basicURL = GetCurrURL();
                     var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), _patchCtrl.Settings.versionInfoFileName);
-                    var result = await SnkHttpWeb.Get(url);
+                    var result = await SnkHttpWeb.GetAsync(url);
                     if (result.IsError)
                     {
                         IsError = true;
@@ -103,7 +103,7 @@ namespace SnkFeatureKit.Patcher
                         s_log?.Error($"获取远端版本信息失败。URL:{url}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
                         return false;
                     }
-                    var content = Encoding.UTF8.GetString(result.Data);
+                    var content = result.ContentData;
 
                     _versionInfos = SnkVersionInfos.ValueOf(content);
 
@@ -165,7 +165,7 @@ namespace SnkFeatureKit.Patcher
             {
                 var basicURL = GetCurrURL();
                 var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), version.ToString(), _patchCtrl.Settings.manifestFileName);
-                var result = await SnkHttpWeb.Get(url);
+                var result = await SnkHttpWeb.GetAsync(url);
                 if (result.IsError)
                 {
                     IsError = true;
@@ -174,7 +174,7 @@ namespace SnkFeatureKit.Patcher
                 }
                 s_log?.Info("url:" + url);
 
-                var content = Encoding.UTF8.GetString(result.Data);
+                var content = result.ContentData;
                 this._sourceInfoList = SnkPatch.SnkSourceInfoListValueOf(content);
                 return this._sourceInfoList;
             }
