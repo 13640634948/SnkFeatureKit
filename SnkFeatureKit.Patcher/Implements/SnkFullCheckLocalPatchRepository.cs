@@ -69,7 +69,7 @@ namespace SnkFeatureKit.Patcher
                 }
                 catch (System.Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    throw;
                 }
 
                 _sourceInfoList = bag.ToList();
