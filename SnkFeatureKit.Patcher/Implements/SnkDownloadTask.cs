@@ -43,7 +43,7 @@ namespace SnkFeatureKit.Patcher
 
             public void CancelDownload()
             {
-                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource?.Cancel();
             }
 
             public void DownloadFile(int buffSize = 65536, bool resume = false)
@@ -124,6 +124,9 @@ namespace SnkFeatureKit.Patcher
 
             public Task DownloadFileAsync(int buffSize = 1024 * 64, bool resume = false, CancellationTokenSource cancellationTokenSource = null)
             {
+                if(cancellationTokenSource == null)
+                    return Task.Run(() => DownloadFile(buffSize, resume));
+                
                 _cancellationTokenSource = cancellationTokenSource;
                 return Task.Run(() => DownloadFile(buffSize, resume), _cancellationTokenSource.Token);
             }
