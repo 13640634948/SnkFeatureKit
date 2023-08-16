@@ -19,6 +19,7 @@ namespace SnkFeatureKit.Patcher
 
         public override string ToString()
         {
+            return SnkPatch.JsonParser.ToJson(this);
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(appVersion.ToString());
             if (histories != null && histories.Count > 0)
@@ -32,7 +33,8 @@ namespace SnkFeatureKit.Patcher
         }
 
         public static SnkVersionInfos ValueOf(string content)
-        {
+        {            
+            return SnkPatch.JsonParser.FromJson<SnkVersionInfos>(content);
             var infos = new SnkVersionInfos();
             var array = content.Trim().Split('\n');
             if (array.Length <= 0)

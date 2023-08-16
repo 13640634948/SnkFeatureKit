@@ -27,11 +27,14 @@
 
         public override string ToString()
         {
+            return SnkPatch.JsonParser.ToJson(this);
             return $"{key}|{version}|{size}|{code}";
         }
 
         public static SnkSourceInfo ValueOf(string content)
         {
+            return SnkPatch.JsonParser.FromJson<SnkSourceInfo>(content);
+
             var sourceInfo = new SnkSourceInfo();
             var array = content.Trim().Split('|');
             if (array.Length != 4)

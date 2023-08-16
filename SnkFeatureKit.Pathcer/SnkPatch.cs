@@ -16,6 +16,13 @@ namespace SnkFeatureKit.Patcher
         {
             public static ISnkCodeGenerator codeGenerator = new SnkMD5Generator();
 
+            internal static ISnkJsonParser JsonParser;
+
+            public static void Initialization<TJsonParser>() where TJsonParser : ISnkJsonParser,new()
+            {
+                JsonParser = new TJsonParser();
+            }
+
             public static List<SnkSourceInfo> SnkSourceInfoListValueOf(string content)
             {
                 var sourceInfoList = new List<SnkSourceInfo>();

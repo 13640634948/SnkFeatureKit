@@ -9,11 +9,14 @@ namespace SnkFeatureKit.Patcher
 
         public override string ToString()
         {
+            return SnkPatch.JsonParser.ToJson(this);
             return $"{version}|{size}|{count}|{code}";
         }
 
         public static SnkVersionMeta ValueOf(string content)
         {
+            return SnkPatch.JsonParser.FromJson<SnkVersionMeta>(content);
+
             var meta = new SnkVersionMeta();
             var array = content.Trim().Split('|');
             if (array.Length != 4)

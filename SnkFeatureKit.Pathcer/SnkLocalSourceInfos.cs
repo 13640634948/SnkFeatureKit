@@ -16,6 +16,8 @@ namespace SnkFeatureKit.Patcher
 
             public override string ToString()
             {
+                return SnkPatch.JsonParser.ToJson(this);
+
                 var stringBuilder = new StringBuilder();
                 stringBuilder.AppendLine(resVersion.ToString());
                 if (localSourceInfoList != null && localSourceInfoList.Count > 0)
@@ -30,6 +32,8 @@ namespace SnkFeatureKit.Patcher
 
             public static SnkLocalSourceInfos ValueOf(string content)
             {
+                return SnkPatch.JsonParser.FromJson<SnkLocalSourceInfos>(content);
+
                 var infos = new SnkLocalSourceInfos();
                 var array = content.Trim().Split('\n');
                 if (array.Length <= 0)

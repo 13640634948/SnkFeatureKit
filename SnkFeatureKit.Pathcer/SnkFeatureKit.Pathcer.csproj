@@ -50,6 +50,7 @@
         <Compile Include="Interfaces\ISnkCodeGenerator.cs" />
         <Compile Include="Interfaces\ISnkDownloadTask.cs" />
         <Compile Include="Interfaces\ISnkFileFinder.cs" />
+        <Compile Include="Interfaces\ISnkJsonParser.cs" />
         <Compile Include="Interfaces\ISnkLocalPatchRepository.cs" />
         <Compile Include="Interfaces\ISnkPatchController.cs" />
         <Compile Include="Interfaces\ISnkPatchRepository.cs" />
