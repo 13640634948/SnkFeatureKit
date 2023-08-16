@@ -30,10 +30,12 @@ namespace SnkFeatureKit.Patcher
             private bool _disposed = false;
 
             protected string _localVersionFullName;
+            protected ISnkJsonParser _jsonParser;
 
-            public virtual Task<bool> Initialize(ISnkPatchController patchController)
+            public virtual Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
             {
                 this._patchCtrl = patchController;
+                this._jsonParser = jsonParser;
 
                 _localVersionFullName = Path.Combine(this.LocalPath, this._patchCtrl.Settings.localVersionDir, this._patchCtrl.Settings.versionInfoFileName);
                 var fileInfo = new FileInfo(_localVersionFullName);
@@ -47,7 +49,7 @@ namespace SnkFeatureKit.Patcher
                 else
                 {
                     string text = File.ReadAllText(fileInfo.FullName).Trim();
-                    this._localSourceInfos = SnkLocalSourceInfos.ValueOf(text);
+                    this._localSourceInfos = _jsonParser.FromJson<SnkLocalSourceInfos>(text);
                 }
                 return Task.FromResult(true);
             }
@@ -93,7 +95,7 @@ namespace SnkFeatureKit.Patcher
 
                 if (fileInfo.Directory.Exists == false)
                     fileInfo.Directory.Create();
-                var json = this._localSourceInfos.ToString();
+                var json = _jsonParser.ToJson(this._localSourceInfos);
                 File.WriteAllText(fileInfo.FullName, json);
             }
 

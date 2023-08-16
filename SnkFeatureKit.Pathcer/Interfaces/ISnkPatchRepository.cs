@@ -21,7 +21,7 @@ namespace SnkFeatureKit.Patcher
             /// </summary>
             /// <param name="patchController">补丁控制器</param>
             /// <returns>任务</returns>
-            Task<bool> Initialize(ISnkPatchController patchController);
+            Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser);
 
             /// <summary>
             /// 获取资源信息列表

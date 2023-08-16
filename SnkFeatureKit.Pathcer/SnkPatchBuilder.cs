@@ -13,13 +13,15 @@ namespace SnkFeatureKit.Patcher
         private readonly string _channelName;
         private readonly int _appVersion;
         private readonly SnkPatchSettings _settings;
+        private readonly ISnkJsonParser _jsonParser;
 
-        public SnkPatchBuilder(string projPath, string channelName, int appVersion, SnkPatchSettings settings)
+        public SnkPatchBuilder(string projPath, string channelName, int appVersion, SnkPatchSettings settings, ISnkJsonParser jsonParser)
         {
             this._projPath = projPath;
             this._channelName = channelName;
             this._appVersion = appVersion;
             this._settings = settings;
+            this._jsonParser = jsonParser;
         }
 
         private SnkVersionInfos LoadVersionInfos(string appVersionPath)
@@ -35,7 +37,7 @@ namespace SnkFeatureKit.Patcher
             }
 
             var jsonString = File.ReadAllText(fileInfo.FullName);
-            return SnkVersionInfos.ValueOf(jsonString);
+            return _jsonParser.FromJson<SnkVersionInfos>(jsonString);
         }
 
         public async Task<SnkVersionMeta> Build(List<ISnkFileFinder> finderList, System.Func<string, bool> overrideReadOnlyFile = null)
@@ -67,7 +69,7 @@ namespace SnkFeatureKit.Patcher
                 if (fileInfo.Exists == true)
                 {
                     var jsonString = await Task.Run(() => File.ReadAllText(fileInfo.FullName));
-                    var list = SnkPatch.SnkSourceInfoListValueOf(jsonString);
+                    var list = _jsonParser.FromJson<List<SnkSourceInfo>>(jsonString);
                     lastSourceInfoList.AddRange(list);
                 }
             }
@@ -114,7 +116,7 @@ namespace SnkFeatureKit.Patcher
             //保存最新的资源清单
             var manifestPath = Path.Combine(projResPath, this._settings.manifestFileName);
 
-            await Task.Run(() => File.WriteAllText(manifestPath, SnkPatch.SnkSourceInfoListToString(lastSourceInfoList)));
+            await Task.Run(() => File.WriteAllText(manifestPath, _jsonParser.ToJson(lastSourceInfoList)));
 
             var willCopyFileList = addList;
             willCopyFileList.RemoveAll(a => a.version == 0);
@@ -135,7 +137,7 @@ namespace SnkFeatureKit.Patcher
 
             //保存版本信息
             var versionInfosPath = Path.Combine(appVersionPath, this._settings.versionInfoFileName);
-            await Task.Run(() => File.WriteAllText(versionInfosPath, versionInfos.ToString()));
+            await Task.Run(() => File.WriteAllText(versionInfosPath, _jsonParser.ToJson(versionInfos)));
 
             return versionMeta;
         }

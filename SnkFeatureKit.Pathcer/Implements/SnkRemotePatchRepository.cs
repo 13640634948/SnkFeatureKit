@@ -63,6 +63,7 @@ namespace SnkFeatureKit.Patcher
             private Stopwatch _stopwatch;
 
             private List<Tuple<long, long>> _speedCacheList = new List<Tuple<long, long>>();
+            private ISnkJsonParser _jsonParser;
 
             /// <summary>
             /// 平均速度
@@ -88,11 +89,13 @@ namespace SnkFeatureKit.Patcher
                 _logTaskCount = 0;
             }
 
-            public async Task<bool> Initialize(ISnkPatchController patchController)
+            public async Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
             {
                 try
                 {
                     this._patchCtrl = patchController;
+                    this._jsonParser = jsonParser;
+
                     var basicURL = GetCurrURL();
                     var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), _patchCtrl.Settings.versionInfoFileName);
                     var result = await SnkHttpWeb.GetAsync(url);
@@ -105,7 +108,7 @@ namespace SnkFeatureKit.Patcher
                     }
                     var content = result.ContentData;
 
-                    _versionInfos = SnkVersionInfos.ValueOf(content);
+                    _versionInfos = _jsonParser.FromJson<SnkVersionInfos>(content);
 
                     var lastVersionIndex = _versionInfos.histories.Count - 1;
                     Version = _versionInfos.histories[lastVersionIndex].version;
@@ -175,7 +178,7 @@ namespace SnkFeatureKit.Patcher
                 s_log?.Info("url:" + url);
 
                 var content = result.ContentData;
-                this._sourceInfoList = SnkPatch.SnkSourceInfoListValueOf(content);
+                this._sourceInfoList = _jsonParser.FromJson<List<SnkSourceInfo>>(content);
                 return this._sourceInfoList;
             }
 

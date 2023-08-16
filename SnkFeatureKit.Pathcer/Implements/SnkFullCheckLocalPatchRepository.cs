@@ -16,10 +16,9 @@ namespace SnkFeatureKit.Patcher
             private List<SnkSourceInfo> _sourceInfoList;
             protected override List<SnkSourceInfo> sourceInfoList => _sourceInfoList;
 
-            public override async Task<bool> Initialize(ISnkPatchController patchController)
+            public override async Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
             {
-                await base.Initialize(patchController);
-                _sourceInfoList = await GetSourceInfoList();
+                await base.Initialize(patchController, jsonParser);
                 return true;
             }
 

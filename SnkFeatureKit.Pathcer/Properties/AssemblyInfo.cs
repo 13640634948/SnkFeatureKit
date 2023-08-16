@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SnkFeatureKit.Pathcer")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Snk功能插件包")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ClaineLe")]
 [assembly: AssemblyProduct("SnkFeatureKit.Pathcer")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]

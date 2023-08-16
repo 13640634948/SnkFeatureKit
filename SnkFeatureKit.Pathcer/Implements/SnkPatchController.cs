@@ -69,9 +69,11 @@ namespace SnkFeatureKit.Patcher
 
             public Exception Exception;
 
-            public SnkPatchController(SnkPatchControlSettings settings, int threadNumber)
+            private ISnkJsonParser _jsonParser;
+            public SnkPatchController(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
             {
                 this._settings = settings;
+                this._jsonParser = jsonParser;
 
                 this._localRepo = new TLocalRepo();
                 this._remoteRepo = new TRemoteRepo();
@@ -81,8 +83,8 @@ namespace SnkFeatureKit.Patcher
             public async Task Initialize()
             {
                 status = STATE.initializing;
-                var localInitTask = this._localRepo.Initialize(this);
-                var remoteInfoTask = this._remoteRepo.Initialize(this);
+                var localInitTask = this._localRepo.Initialize(this, _jsonParser);
+                var remoteInfoTask = this._remoteRepo.Initialize(this, _jsonParser);
                 await Task.WhenAll(localInitTask, remoteInfoTask).ConfigureAwait(false);
 
                 if (this._localRepo.IsError)
