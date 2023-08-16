@@ -80,6 +80,9 @@ namespace SnkFeatureKit.Patcher
                         var len = 0;
                         using (var responseStream = response.GetResponseStream())
                         {
+                            if(fileInfo.Directory.Exists == false)
+                                fileInfo.Directory.Create();
+
                             using (fileStream = fileStream ?? fileInfo.Open(FileMode.Create, FileAccess.ReadWrite))
                             {
                                 while ((len = responseStream.Read(buffer, 0, buffSize)) > 0)
