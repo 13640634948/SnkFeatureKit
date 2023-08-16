@@ -320,7 +320,8 @@ namespace SnkFeatureKit.Patcher
                         return task;
                     }
 
-                    if (_exceptionQueue.Count == 0) return null;
+                    if (_exceptionQueue.Count == 0) 
+                        return null;
 
                     //if (s_log.IsInfoEnabled)
                     {
