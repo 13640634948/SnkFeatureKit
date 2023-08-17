@@ -1,14 +1,26 @@
-key=$1
-version=$2
+version=$1
+configuration=$2
+key=$3
+
+
 directory="NugetOutput"
 source="https://api.nuget.org/v3/index.json"
 
-nuget pack SnkFeatureKit.Asynchronous/SnkFeatureKit.Asynchronous.csproj -Version $version -OutputDirectory $directory/$version
-nuget pack SnkFeatureKit.ContentDelivery/SnkFeatureKit.ContentDelivery.csproj -Version $version -OutputDirectory $directory/$version
-nuget pack SnkFeatureKit.Logging/SnkFeatureKit.Logging.csproj -Version $version -OutputDirectory $directory/$version
-nuget pack SnkFeatureKit.Patcher/SnkFeatureKit.Patcher.csproj -Version $version -OutputDirectory $directory/$version
+proj_array[0]="SnkFeatureKit.Asynchronous"
+proj_array[1]="SnkFeatureKit.ContentDelivery"
+proj_array[2]="SnkFeatureKit.Logging"
+proj_array[3]="SnkFeatureKit.Patcher"
 
-#nuget push $directory/$version/SnkFeatureKit.Asynchronous.$version.nupkg $key -Source $source
-#nuget push $directory/$version/SnkFeatureKit.ContentDelivery.$version.nupkg $key -Source $source
-#nuget push $directory/$version/SnkFeatureKit.Logging.$version.nupkg $key -Source $source
-#nuget push $directory/$version/SnkFeatureKit.Patcher.$version.nupkg $key -Source $source
+
+for (( i = 0; i < ${#proj_array[@]}; i++ )); do
+	proj_name=${proj_array[$i]}
+	nuget pack $proj_name/$proj_name.csproj -Version $version -OutputDirectory $directory/$version -Properties Configuration=$configuration
+done
+
+if [ -n "$key" ]; then
+	for (( i = 0; i < ${#proj_array[@]}; i++ )); do
+		proj_name=${proj_array[$i]}
+		nuget push $directory/$version/$proj_name.$version.nupkg $key -Source $source
+	done
+fi
+
