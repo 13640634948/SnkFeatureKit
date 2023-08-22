@@ -14,13 +14,17 @@ proj_array[3]="SnkFeatureKit.Patcher"
 
 for (( i = 0; i < ${#proj_array[@]}; i++ )); do
 	proj_name=${proj_array[$i]}
-	nuget pack $proj_name/$proj_name.csproj -Version $version -OutputDirectory $directory/$version -Properties Configuration=$configuration
+#	nuget pack $proj_name/$proj_name.csproj -Version $version -OutputDirectory $directory/$version -Properties Configuration=$configuration
+	dotnet pack -o $directory/$version -p:PackageVersion=$version -c:$configuration
 done
 
+
+#
 if [ -n "$key" ]; then
 	for (( i = 0; i < ${#proj_array[@]}; i++ )); do
 		proj_name=${proj_array[$i]}
-		nuget push $directory/$version/$proj_name.$version.nupkg $key -Source $source
+		#nuget push $directory/$version/$proj_name.$version.nupkg $key -Source $source
+		dotnet nuget push $directory/$version/$proj_name.$version.nupkg --api-key $key --source $source
 	done
 fi
 
