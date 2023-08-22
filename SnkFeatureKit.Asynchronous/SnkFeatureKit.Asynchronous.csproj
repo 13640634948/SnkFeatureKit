@@ -1,75 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{5BB720EA-FA63-4725-8A00-EEF778F432CB}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>SnkFeatureKit.Asynchronous</RootNamespace>
-        <AssemblyName>SnkFeatureKit.Asynchronous</AssemblyName>
-        <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
+        <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
+
     <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
+      <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Interfaces\ISnkAsyncResult.cs" />
-        <Compile Include="Interfaces\ISnkAsyncTask.cs" />
-        <Compile Include="Interfaces\ISnkAwaiter.cs" />
-        <Compile Include="Interfaces\ISnkCallbackable.cs" />
-        <Compile Include="Interfaces\ISnkProgressCallbackable.cs" />
-        <Compile Include="Interfaces\ISnkProgressPromise.cs" />
-        <Compile Include="Interfaces\ISnkProgressResult.cs" />
-        <Compile Include="Interfaces\ISnkProgressTask.cs" />
-        <Compile Include="Interfaces\ISnkPromise.cs" />
-        <Compile Include="Interfaces\ISnkSynchronizable.cs" />
-        <Compile Include="Internals\SnkCallbackable.cs" />
-        <Compile Include="Internals\SnkProgressCallbackable.cs" />
-        <Compile Include="Internals\SnkSynchronizable.cs" />
-        <Compile Include="ISnkAsyncExecutor.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="SnkAsyncExecutor.cs" />
-        <Compile Include="SnkAsyncResult.cs" />
-        <Compile Include="SnkProgressResult.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj">
-        <Project>{9dcf2fd8-18aa-461e-97c9-bcd18e31c74d}</Project>
-        <Name>SnkFeatureKit.Logging</Name>
-      </ProjectReference>
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
 
 </Project>

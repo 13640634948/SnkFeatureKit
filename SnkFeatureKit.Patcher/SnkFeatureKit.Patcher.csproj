@@ -1,86 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>SnkPathcer</RootNamespace>
-        <AssemblyName>SnkFeatureKit.Patcher</AssemblyName>
-        <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-        <FileAlignment>512</FileAlignment>
-        <LangVersion>6</LangVersion>
+        <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <OutputPath>bin\Debug\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>bin\Release\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
+
     <ItemGroup>
-        <Reference Include="System" />
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Xml" />
+      <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Extension\SnkExtension.cs" />
-        <Compile Include="Implements\SnkDownloadTask.cs" />
-        <Compile Include="Implements\SnkFileFinder.cs" />
-        <Compile Include="Implements\SnkFullCheckLocalPatchRepository.cs" />
-        <Compile Include="Implements\SnkLocalPatchRepository.cs" />
-        <Compile Include="Implements\SnkMD5Generator.cs" />
-        <Compile Include="Implements\SnkPatchController.cs" />
-        <Compile Include="Implements\SnkRemotePatchRepository.cs" />
-        <Compile Include="Interfaces\ISnkCodeGenerator.cs" />
-        <Compile Include="Interfaces\ISnkDownloadTask.cs" />
-        <Compile Include="Interfaces\ISnkFileFinder.cs" />
-        <Compile Include="Interfaces\ISnkJsonParser.cs" />
-        <Compile Include="Interfaces\ISnkLocalPatchRepository.cs" />
-        <Compile Include="Interfaces\ISnkPatchController.cs" />
-        <Compile Include="Interfaces\ISnkPatchRepository.cs" />
-        <Compile Include="Interfaces\ISnkRemotePatchRepository.cs" />
-        <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="SnkHttpResult.cs" />
-        <Compile Include="SnkHttpWeb.cs" />
-        <Compile Include="SnkLocalSourceInfos.cs" />
-        <Compile Include="SnkPatch.cs" />
-        <Compile Include="SnkPatchBuilder.cs" />
-        <Compile Include="SnkPatchControlSettings.cs" />
-        <Compile Include="SnkPatchSettings.cs" />
-        <Compile Include="SnkSourceInfo.cs" />
-        <Compile Include="SnkVersionInfos.cs" />
-        <Compile Include="SnkVersionMeta.cs" />
-        <Compile Include="SNK_HTTP_ERROR_CODE.cs" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj">
-        <Project>{9dcf2fd8-18aa-461e-97c9-bcd18e31c74d}</Project>
-        <Name>SnkFeatureKit.Logging</Name>
-      </ProjectReference>
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
 
 </Project>
