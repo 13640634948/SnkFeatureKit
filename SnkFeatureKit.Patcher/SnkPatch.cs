@@ -15,7 +15,7 @@ namespace SnkFeatureKit.Patcher
 {
     public class SnkPatch
     {
-        public static ISnkCodeGenerator codeGenerator = new SnkMD5Generator();
+        public static ISnkCodeGenerator S_CodeGenerator = new SnkMD5Generator();
 
         public static SnkPatchBuilder CreatePatchBuilder(ISnkJsonParser jsonParser, string projPath, string channelName, int appVersion, SnkPatchSettings settings = null)
         {
@@ -35,8 +35,7 @@ namespace SnkFeatureKit.Patcher
 
         public static async Task<List<SnkSourceInfo>> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, Dictionary<string,string> keyPathMapping = null)
         {
-            FileInfo[] fileInfos = null;
-            if (fileFinder.TrySurvey(out fileInfos) == false)
+            if (fileFinder.TrySurvey(out var fileInfos) == false)
             {
                 if(SnkLogHost.Default != null && SnkLogHost.Default.IsEnabled(LogLevel.Warning))
                     SnkLogHost.Default.LogWarning("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
@@ -64,8 +63,7 @@ namespace SnkFeatureKit.Patcher
 
                     if (taskList.Count < threadNumber && fileInfoBag.Count > 0)
                     {
-                        FileInfo fileInfo = null;
-                        if (fileInfoBag.TryTake(out fileInfo) == false)
+                        if (fileInfoBag.TryTake(out var fileInfo) == false)
                             continue;
 
                         var task = Task.Run(() => 
@@ -88,7 +86,7 @@ namespace SnkFeatureKit.Patcher
 
                             info.version = resVersion;
                             info.size = fileInfo.Length;
-                            info.code = SnkPatch.codeGenerator.CalculateFileMD5(fileInfo.FullName);
+                            info.code = S_CodeGenerator.CalculateFileMD5(fileInfo.FullName);
 
                             sourceInfoBag.Add(info);
                             mappingBag.Add(new Tuple<string, string>(info.key, fileInfo.FullName));
@@ -109,12 +107,11 @@ namespace SnkFeatureKit.Patcher
         {
             foreach (var sourceInfo in sourceInfoList)
             {
-                string fullPath = string.Empty;
-                if (keyPathMapping.TryGetValue(sourceInfo.key, out fullPath))
+                if (keyPathMapping.TryGetValue(sourceInfo.key, out var fullPath))
                 {
-                    var fromFileInfo = new System.IO.FileInfo(fullPath);
-                    var toFileInfo = new System.IO.FileInfo(System.IO.Path.Combine(toDirectoryFullPath, sourceInfo.key));
-                    if (toFileInfo.Directory.Exists == false)
+                    var fromFileInfo = new FileInfo(fullPath);
+                    var toFileInfo = new FileInfo(Path.Combine(toDirectoryFullPath, sourceInfo.key));
+                    if (toFileInfo.Directory?.Exists == false)
                         toFileInfo.Directory.Create();
                     if(toFileInfo.Exists)
                         toFileInfo.Delete();
@@ -122,7 +119,7 @@ namespace SnkFeatureKit.Patcher
                 }
                 else
                 {
-                    throw new System.Exception("路径映射表中，没有好到key对应的路径. key:" + sourceInfo.key);
+                    throw new Exception("路径映射表中，没有好到key对应的路径. key:" + sourceInfo.key);
                 }
             }
         }

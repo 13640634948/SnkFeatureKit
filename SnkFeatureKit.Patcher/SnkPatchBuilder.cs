@@ -47,7 +47,7 @@ namespace SnkFeatureKit.Patcher
         {
             if (finderList == null || finderList.Count == 0)
             {
-                throw new System.Exception("filderList is null or len = 0");
+                throw new System.Exception("finderList is null or len = 0");
             }
 
             if(logger != null && logger.IsEnabled(LogLevel.Information))
@@ -71,7 +71,7 @@ namespace SnkFeatureKit.Patcher
                 //加载最新的资源列表
                 var lastResManifestPath = Path.Combine(appVersionPath, lastResVersion.ToString(), _settings.manifestFileName);
                 var fileInfo = new FileInfo(lastResManifestPath);
-                if (fileInfo.Exists == true)
+                if (fileInfo.Exists)
                 {
                     var jsonString = await Task.Run(() => File.ReadAllText(fileInfo.FullName));
                     var list = _jsonParser.FromJson<List<SnkSourceInfo>>(jsonString);
@@ -135,7 +135,7 @@ namespace SnkFeatureKit.Patcher
                 version = resVersion,
                 size = addList.Sum(a => a.size),
                 count = addList.Count,
-                code = SnkPatch.codeGenerator.CalculateFileMD5(manifestPath)
+                code = SnkPatch.S_CodeGenerator.CalculateFileMD5(manifestPath)
             };
             versionInfos.histories.Add(versionMeta);
             versionInfos.appVersion = _appVersion;
