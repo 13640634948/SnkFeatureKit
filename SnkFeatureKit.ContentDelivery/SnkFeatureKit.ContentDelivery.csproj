@@ -8,6 +8,7 @@
       <PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.13.0" />
       <PackageReference Include="HuaweiCloud.OBS.SDK" Version="3.20.7" />
       <PackageReference Include="Tencent.QCloud.Cos.Sdk" Version="5.4.34" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
     </ItemGroup>
 
 </Project>

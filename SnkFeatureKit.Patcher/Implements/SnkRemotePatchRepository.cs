@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-using SnkFeatureKit.Logging;
 using SnkFeatureKit.Patcher.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -15,7 +15,7 @@ namespace SnkFeatureKit.Patcher
     {
         public class SnkRemotePatchRepository : ISnkRemotePatchRepository
         {
-            private static readonly ISnkLogger s_log = SnkLogHost.GetLogger<SnkRemotePatchRepository>();
+            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository>();
 
             public ushort Version { get; private set; }
 
@@ -103,7 +103,8 @@ namespace SnkFeatureKit.Patcher
                     {
                         IsError = true;
                         ExceptionString = "获取远端版本信息失败";
-                        s_log?.Error($"获取远端版本信息失败。URL:{url}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
+                        if(logger != null && logger.IsEnabled(LogLevel.Error))
+                            logger.LogError($"获取远端版本信息失败。URL:{url}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
                         return false;
                     }
                     var content = result.ContentData;
@@ -113,7 +114,7 @@ namespace SnkFeatureKit.Patcher
                     var lastVersionIndex = _versionInfos.histories.Count - 1;
                     Version = _versionInfos.histories[lastVersionIndex].version;
 
-                    //if (s_log.IsInfoEnabled)
+                    if (logger != null && logger.IsEnabled(LogLevel.Information))
                     {
                         var initializeLog = new StringBuilder();
                         initializeLog.AppendLine($"[RemoteInit]AppVersion:{_versionInfos.appVersion}");
@@ -122,15 +123,15 @@ namespace SnkFeatureKit.Patcher
                             initializeLog.AppendLine($"[RemoteInit]AppVersion:{a.version}|{a.size}|{a.count}|{a.code}");
                         }
                         initializeLog.AppendLine($"[RemoteInit]Version:{Version}");
-                        s_log?.Info(initializeLog.ToString());
+                        logger.LogInformation(initializeLog.ToString());
                     }
                 }
                 catch (Exception exception)
                 {
                     IsError = true;
                     ExceptionString = "初始化远端仓库出现未知异常";
-                    //if (s_log.IsErrorEnabled)
-                        s_log?.Error($"[Exception]\n{exception.Message}\n{exception.StackTrace}");
+                    if(logger!= null && logger.IsEnabled(LogLevel.Error))
+                        logger?.LogError(exception, "[SnkRemotePatchRepository.Initialize]");
                     return false;
                 }
                 return true;
@@ -175,7 +176,9 @@ namespace SnkFeatureKit.Patcher
                     ExceptionString = "获取远端资源列表失败";
                     throw new AggregateException("获取远端资源列表失败。URL:" + url + "\nerrText:" + result.Exception.Message + "\n" + result.Exception.StackTrace);
                 }
-                s_log?.Info("url:" + url);
+
+                if (logger != null && logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("url:" + url);
 
                 var content = result.ContentData;
                 this._sourceInfoList = _jsonParser.FromJson<List<SnkSourceInfo>>(content);
@@ -223,8 +226,8 @@ namespace SnkFeatureKit.Patcher
 
             public async Task<bool> StartupDownload(System.Action<string> onPreDownloadTask)
             {
-                //if (s_log.IsInfoEnabled)
-                    s_log?.Info($"[StartDownload] thread number:{this._maxThreadNumber}");
+                if (logger != null && logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation($"[StartDownload] thread number:{this._maxThreadNumber}");
 
                 StartRecordDownloadSpeed();
 
@@ -284,7 +287,8 @@ namespace SnkFeatureKit.Patcher
                     }
                     catch (Exception ex)
                     {
-                        s_log?.Error(ex);
+                        if (logger != null && logger.IsEnabled(LogLevel.Error))
+                            logger.LogError(ex, $"[{this}.StartupDownload]");
                         throw;
                     }
                     return true;
@@ -293,8 +297,9 @@ namespace SnkFeatureKit.Patcher
 
             private void PrintDownloadInfo()
             {
-                //if (!s_log.IsInfoEnabled)
-                //    return;
+                if (logger == null || logger.IsEnabled(LogLevel.Information) == false)
+                    return;
+
                 var exceptionCnt = _exceptionQueue.Count;
                 var downloadingCnt = _downloadingList.Count;
 
@@ -306,7 +311,7 @@ namespace SnkFeatureKit.Patcher
                 if (_logTaskCount == tmpLogTaskCount)
                     return;
                 _logTaskCount = tmpLogTaskCount;
-                s_log?.Info($"[DownloadInfo]-total:{_totalTaskCount}, finish:{_finishTaskCount}, exception:{exceptionCnt}, downloading:{downloadingCnt} => {_logTaskCount}\n[Downloading]\n{logString.Trim()}");
+                logger.LogInformation($"[DownloadInfo]-total:{_totalTaskCount}, finish:{_finishTaskCount}, exception:{exceptionCnt}, downloading:{downloadingCnt} => {_logTaskCount}\n[Downloading]\n{logString.Trim()}");
             }
 
             private ISnkDownloadTask GetPrepareDownloadTask()
@@ -323,15 +328,6 @@ namespace SnkFeatureKit.Patcher
 
                     if (_exceptionQueue.Count == 0) 
                         return null;
-
-                    /*
-                    if (s_log.IsInfoEnabled)
-                    {
-                        var taskKey = $"[回收异常下载任务]数量：{_exceptionQueue.Count}\n";
-                        taskKey = _exceptionQueue.Aggregate(taskKey, (current, task) => $"{current}{task.Item1}\n");
-                        s_log.Info(taskKey.Trim());
-                    }
-                    */
                     
                     while (_exceptionQueue.Count > 0) _willDownloadTaskQueue.Enqueue(_exceptionQueue.Dequeue());
                 }

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
 
-using SnkFeatureKit.Logging;
 using SnkFeatureKit.Patcher.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -12,7 +12,8 @@ namespace SnkFeatureKit.Patcher
     {
         public class SnkLocalPatchRepository : ISnkLocalPatchRepository
         {
-            protected static readonly ISnkLogger s_log = SnkLogHost.GetLogger<SnkLocalPatchRepository>();
+            protected static readonly ILogger logger = SnkLogHost.GetLogger<SnkLocalPatchRepository>();
+
             public ushort Version => _localSourceInfos.resVersion;
 
             public bool IsError { get; protected set; } = false;
@@ -56,8 +57,9 @@ namespace SnkFeatureKit.Patcher
 
             public virtual Task<List<SnkSourceInfo>> GetSourceInfoList(ushort version = 0)
             {
-                //if (s_log.IsInfoEnabled)
-                    s_log?.Info($"[RemoteRepo]GetSourceInfoList.fromVersion:{version}");
+                if(logger != null && logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation($"[RemoteRepo]GetSourceInfoList.fromVersion:{version}");
+
                 return Task.FromResult(sourceInfoList);
             }
 
@@ -77,11 +79,6 @@ namespace SnkFeatureKit.Patcher
                 else if (add == false && index >= 0)
                 {
                     this.sourceInfoList.RemoveAt(index);
-                }
-                else
-                {
-                    //if (s_log.IsErrorEnabled)
-                        s_log?.Error($"û���ҵ���Ӧ�Ĳ�������add:{add}, sourceInfo:{sourceInfo}");
                 }
                 SaveSourceInfo();
             }

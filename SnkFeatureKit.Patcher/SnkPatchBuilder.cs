@@ -2,13 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SnkFeatureKit.Logging;
+using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Patcher.Implements;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
 {
     public class SnkPatchBuilder
     {
+        private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository>();
+
         private readonly string _projPath;
         private readonly string _channelName;
         private readonly int _appVersion;
@@ -46,7 +49,9 @@ namespace SnkFeatureKit.Patcher
             {
                 throw new System.Exception("filderList is null or len = 0");
             }
-            SnkLogHost.Default?.Info(Path.GetFullPath(this._projPath));
+
+            if(logger != null && logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation(Path.GetFullPath(this._projPath));
 
             var appVersionPath = Path.Combine(this._projPath, this._channelName, _appVersion.ToString());
             if (Directory.Exists(appVersionPath) == false)

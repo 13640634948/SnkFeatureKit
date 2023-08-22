@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SnkFeatureKit.Logging;
+
 using SnkFeatureKit.Patcher.Extension;
 using SnkFeatureKit.Patcher.Interfaces;
 using SnkFeatureKit.Patcher.Implements;
+using Microsoft.Extensions.Logging;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -37,7 +38,8 @@ namespace SnkFeatureKit.Patcher
             FileInfo[] fileInfos = null;
             if (fileFinder.TrySurvey(out fileInfos) == false)
             {
-                SnkLogHost.Default?.WarnFormat("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
+                if(SnkLogHost.Default != null && SnkLogHost.Default.IsEnabled(LogLevel.Warning))
+                    SnkLogHost.Default.LogWarning("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
                 return null;
             }
 

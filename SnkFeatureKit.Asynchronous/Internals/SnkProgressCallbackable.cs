@@ -1,6 +1,6 @@
 ﻿using System;
 using SnkFeatureKit.Asynchronous.Interfaces;
-using SnkFeatureKit.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace SnkFeatureKit.Asynchronous
 {
@@ -8,7 +8,7 @@ namespace SnkFeatureKit.Asynchronous
     {
         internal class SnkProgressCallbackable<TProgress> : ISnkProgressCallbackable<TProgress>
         {
-            private static readonly ISnkLogger log = SnkLogHost.GetLogger<SnkProgressCallbackable<TProgress>>();
+            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkProgressCallbackable<TProgress>>();
 
             private ISnkProgressResult<TProgress> result;
             private readonly object _lock = new object();
@@ -40,15 +40,15 @@ namespace SnkFeatureKit.Asynchronous
                             }
                             catch (Exception e)
                             {
-                                if (log.IsWarnEnabled)
-                                    log.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
+                                if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                    logger.LogWarning("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        if (log.IsWarnEnabled)
-                            log.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
+                        if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                            logger.LogWarning("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                     }
                     finally
                     {
@@ -75,15 +75,15 @@ namespace SnkFeatureKit.Asynchronous
                             }
                             catch (Exception e)
                             {
-                                if (log.IsWarnEnabled)
-                                    log.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
+                                if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                    logger.LogWarning("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        if (log.IsWarnEnabled)
-                            log.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
+                        if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                            logger.LogWarning("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                     }
                 }
             }
@@ -103,8 +103,8 @@ namespace SnkFeatureKit.Asynchronous
                         }
                         catch (Exception e)
                         {
-                            if (log.IsWarnEnabled)
-                                log.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
+                            if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                logger.LogWarning("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                         }
                         return;
                     }
@@ -128,8 +128,8 @@ namespace SnkFeatureKit.Asynchronous
                         }
                         catch (Exception e)
                         {
-                            if (log.IsWarnEnabled)
-                                log.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
+                            if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                logger.LogWarning("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                         }
                         return;
                     }
@@ -141,7 +141,7 @@ namespace SnkFeatureKit.Asynchronous
 
         internal class SnkProgressCallbackable<TProgress, TResult> : ISnkProgressCallbackable<TProgress, TResult>
         {
-            private static readonly ISnkLogger s_log = SnkLogHost.GetLogger<SnkProgressCallbackable<TProgress, TResult>>();
+            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkProgressCallbackable<TProgress, TResult>>();
 
             private ISnkProgressResult<TProgress, TResult> result;
             private readonly object _lock = new object();
@@ -173,15 +173,15 @@ namespace SnkFeatureKit.Asynchronous
                             }
                             catch (Exception e)
                             {
-                                //if (s_log.IsWarnEnabled)
-                                    s_log?.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
+                                if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                    logger.LogWarning("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        //if (s_log.IsWarnEnabled)
-                            s_log?.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
+                        if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                            logger.LogWarning("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                     }
                     finally
                     {
@@ -208,15 +208,15 @@ namespace SnkFeatureKit.Asynchronous
                             }
                             catch (Exception e)
                             {
-                                //if (s_log.IsWarnEnabled)
-                                    s_log?.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
+                                if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                    logger.LogWarning("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        //if (s_log.IsWarnEnabled)
-                            s_log?.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
+                        if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                            logger.LogWarning("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                     }
                 }
             }
@@ -236,8 +236,8 @@ namespace SnkFeatureKit.Asynchronous
                         }
                         catch (Exception e)
                         {
-                            //if (s_log.IsWarnEnabled)
-                                s_log?.WarnFormat("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
+                            if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                logger.LogWarning("Class[{0}] callback exception.Error:{1}", this.GetType(), e);
                         }
                         return;
                     }
@@ -261,8 +261,8 @@ namespace SnkFeatureKit.Asynchronous
                         }
                         catch (Exception e)
                         {
-                            //if (s_log.IsWarnEnabled)
-                                s_log?.WarnFormat("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
+                            if (logger != null && logger.IsEnabled(LogLevel.Warning))
+                                logger.LogWarning("Class[{0}] progress callback exception.Error:{1}", this.GetType(), e);
                         }
                         return;
                     }

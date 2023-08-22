@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SnkFeatureKit.Logging;
+using Microsoft.Extensions.Logging;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
@@ -34,7 +34,9 @@ namespace SnkFeatureKit.Patcher
 
                 var bag = new ConcurrentBag<SnkSourceInfo>();
 
-                SnkLogHost.Default?.Debug($"[SnkFullCheckLocalPatchRepository]LocalPath:{this.LocalPath}");
+                if(logger != null && logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation($"[SnkFullCheckLocalPatchRepository]LocalPath:{this.LocalPath}");
+
                 try
                 {
                     var rootDirInfo = new DirectoryInfo(this.LocalPath);

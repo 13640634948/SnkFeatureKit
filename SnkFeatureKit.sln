@@ -1,12 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Patcher", "SnkFeatureKit.Patcher\SnkFeatureKit.Patcher.csproj", "{056D7E04-57B3-4F3D-8FBA-D23CECB42EEF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.ContentDelivery", "SnkFeatureKit.ContentDelivery\SnkFeatureKit.ContentDelivery.csproj", "{F49A152D-8C08-4219-A30C-6BD2246E7BB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Asynchronous", "SnkFeatureKit.Asynchronous\SnkFeatureKit.Asynchronous.csproj", "{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Logging", "SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj", "{800CD6DD-227D-49BF-8B7A-8CDC5F762DCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +25,5 @@ Global
 		{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{800CD6DD-227D-49BF-8B7A-8CDC5F762DCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{800CD6DD-227D-49BF-8B7A-8CDC5F762DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{800CD6DD-227D-49BF-8B7A-8CDC5F762DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{800CD6DD-227D-49BF-8B7A-8CDC5F762DCF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

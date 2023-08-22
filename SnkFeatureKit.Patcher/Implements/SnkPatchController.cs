@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
-using SnkFeatureKit.Logging;
+using Microsoft.Extensions.Logging;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
@@ -26,7 +25,8 @@ namespace SnkFeatureKit.Patcher
                 downloaded
             }
 
-            private static readonly ISnkLogger s_log = SnkLogHost.GetLogger<SnkPatchController<TLocalRepo, TRemoteRepo>>();
+            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkPatchController<TLocalRepo, TRemoteRepo>>();
+
             private TLocalRepo _localRepo;
             private TRemoteRepo _remoteRepo;
             private SnkPatchControlSettings _settings;
@@ -141,8 +141,8 @@ namespace SnkFeatureKit.Patcher
 
                 status = STATE.downloading;
 
-                //if (s_log.IsInfoEnabled)
-                    s_log?.Info("LocalPath:" + this._localRepo.LocalPath);
+                if(logger != null && logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation("LocalPath:" + this._localRepo.LocalPath);
 
                 var delTask = Task.Run(() =>
                 {
@@ -178,8 +178,8 @@ namespace SnkFeatureKit.Patcher
                         return;
                 }
 
-                //if (s_log.IsInfoEnabled)
-                    s_log?.Info($"UpdateLocalResVersion:{_remoteRepo.Version}");
+                if (logger != null && logger.IsEnabled(LogLevel.Information))
+                    logger?.LogInformation($"UpdateLocalResVersion:{_remoteRepo.Version}");
 
                 _localRepo.UpdateLocalResVersion(_remoteRepo.Version);
 
