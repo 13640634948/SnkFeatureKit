@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SnkFeatureKit.Patcher.Extension;
+using SnkFeatureKit.Patcher.Extensions;
 using SnkFeatureKit.Patcher.Interfaces;
 using SnkFeatureKit.Patcher.Implements;
 using Microsoft.Extensions.Logging;

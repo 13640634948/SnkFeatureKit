@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System;
-using SnkFeatureKit.Patcher.Extension;
+using SnkFeatureKit.Patcher.Extensions;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher

@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-using SnkFeatureKit.Patcher.Extension;
+using SnkFeatureKit.Patcher.Extensions;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher

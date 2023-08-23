@@ -1,4 +1,4 @@
-﻿using SnkFeatureKit.Patcher.Extension;
+﻿using SnkFeatureKit.Patcher.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
