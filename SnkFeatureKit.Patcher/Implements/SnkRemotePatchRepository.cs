@@ -85,7 +85,7 @@ namespace SnkFeatureKit.Patcher
 
             private long prevDownloadSize;
 
-            private Dictionary<ISnkDownloadTask, string> taskKeyDict = new Dictionary<ISnkDownloadTask, string>();
+            //private Dictionary<ISnkDownloadTask, string> taskKeyDict = new Dictionary<ISnkDownloadTask, string>();
 
             public SnkRemotePatchRepository()
             {
@@ -280,17 +280,17 @@ namespace SnkFeatureKit.Patcher
                                     if (task.IsCompleted == false)
                                         continue;
 
-                                    var key = taskKeyDict[task];
+                                    //var key = taskKeyDict[task];
 
                                     if (task.DownloadResult.Code == SNK_HTTP_ERROR_CODE.succeed)
                                     {
                                         this._finishTaskCount++;
                                         this._currDownloadedSize += task.TotalSize;
-                                        onPreDownloadTask(key);
+                                        onPreDownloadTask(task.Name);
                                     }
                                     else
                                     {
-                                        _exceptionQueue.Enqueue(new Tuple<string, string, string>(task.URL, task.SavePath, key));
+                                        _exceptionQueue.Enqueue(new Tuple<string, string, string>(task.URL, task.SavePath, task.Name));
                                         task.CancelDownload();
                                         task.Dispose();
                                         _downloadingList[i] = null;
@@ -354,8 +354,9 @@ namespace SnkFeatureKit.Patcher
                         var tuple = _willDownloadTaskQueue.Dequeue();
                         var url = tuple.Item1.FixSlash();
                         var savePath = tuple.Item2.FixSlash().FixLongPath();
-                        var task = CreateDownloadTaskDelegate.Invoke(url, savePath);
-                        taskKeyDict[task] = tuple.Item3;
+                        var key = tuple.Item3;
+                        var task = CreateDownloadTaskDelegate.Invoke(url, savePath, key);
+                        //taskKeyDict[task] = tuple.Item3;
                         return task;
                     }
 

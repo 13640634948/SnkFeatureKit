@@ -10,6 +10,8 @@ namespace SnkFeatureKit.Patcher
         /// </summary>
         public interface ISnkDownloadTask : System.IDisposable
         {
+            string Name { get; }
+
             /// <summary>
             /// 下载地址
             /// </summary>
@@ -37,10 +39,6 @@ namespace SnkFeatureKit.Patcher
             /// </summary>
             bool IsCompleted { get; }
 
-            /// <summary>
-            /// 是否断点续传
-            /// </summary>
-            bool Resume { get; }
 
             /// <summary>
             /// 下载状态
