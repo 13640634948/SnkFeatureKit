@@ -10,17 +10,17 @@ namespace SnkFeatureKit.Patcher
         /// </summary>
         public interface ISnkDownloadTask : System.IDisposable
         {
-            string Name { get; }
+            string Name { get; set; }
 
             /// <summary>
             /// 下载地址
             /// </summary>
-            string URL { get; }
+            string URL { get;set; }
 
             /// <summary>
             /// 保存地址
             /// </summary>
-            string SavePath { get; }
+            string SavePath { get; set;}
 
             /// <summary>
             /// 文件总大小

@@ -30,8 +30,9 @@ namespace SnkFeatureKit.Patcher
             return new SnkPatchController<TLocalRepo, TRemoteRepo>(settings, threadNumber, jsonParser);
         }
 
-        public static ISnkPatchController CreatePatchExecutor(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
-            => CreatePatchExecutor<SnkLocalPatchRepository, SnkRemotePatchRepository>(settings, threadNumber, jsonParser);
+        public static ISnkPatchController CreatePatchExecutor<TDownloadTask>(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
+            where TDownloadTask : class, ISnkDownloadTask, new()
+            => CreatePatchExecutor<SnkLocalPatchRepository, SnkRemotePatchRepository<TDownloadTask>>(settings, threadNumber, jsonParser);
 
         public static async Task<List<SnkSourceInfo>> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, Dictionary<string,string> keyPathMapping = null)
         {

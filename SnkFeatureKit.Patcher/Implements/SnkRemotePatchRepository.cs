@@ -8,7 +8,6 @@ using System.Diagnostics;
 
 using SnkFeatureKit.Patcher.Interfaces;
 using Microsoft.Extensions.Logging;
-using SnkFeatureKit.Patcher.Delegates;
 using SnkFeatureKit.Patcher.Exceptions;
 using SnkFeatureKit.Patcher.Extensions;
 
@@ -16,9 +15,11 @@ namespace SnkFeatureKit.Patcher
 {
     namespace Implements
     {
-        public class SnkRemotePatchRepository : ISnkRemotePatchRepository
+        public class SnkRemotePatchRepository<TDownloadTask> : ISnkRemotePatchRepository
+            where TDownloadTask : class, ISnkDownloadTask, new()
         {
-            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository>();
+            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository<TDownloadTask>>();
+ 
 
             public ushort Version { get; private set; }
 
@@ -60,8 +61,6 @@ namespace SnkFeatureKit.Patcher
 
             private bool _disposed;
 
-            private int _logTaskCount;
-
             private System.Threading.Timer _timer;
             private Stopwatch _stopwatch;
 
@@ -84,13 +83,6 @@ namespace SnkFeatureKit.Patcher
             private long RecordSpeedTime = 10;
 
             private long prevDownloadSize;
-
-            //private Dictionary<ISnkDownloadTask, string> taskKeyDict = new Dictionary<ISnkDownloadTask, string>();
-
-            public SnkRemotePatchRepository()
-            {
-                _logTaskCount = 0;
-            }
 
             private async Task<int> RequestRemoteAppVersion(string url)
             {
@@ -167,7 +159,6 @@ namespace SnkFeatureKit.Patcher
                 return true;
             }
 
-            public CreateDownloadTaskDelegate CreateDownloadTaskDelegate { get; set; }
             public List<SnkVersionMeta> GetResVersionHistories() => this._resVersionList;
 
             public bool Exists(string key) => this._sourceInfoList.Exists(a => a.key.Equals(key));
@@ -312,8 +303,6 @@ namespace SnkFeatureKit.Patcher
                             System.Threading.Thread.Sleep(_threadTickInterval);
                             if (_disposed)
                                 return false;
-
-                            PrintDownloadInfo();
                         }
                     }
                     catch (Exception ex)
@@ -326,24 +315,6 @@ namespace SnkFeatureKit.Patcher
                 });
             }
 
-            private void PrintDownloadInfo()
-            {
-                if (logger == null || logger.IsEnabled(LogLevel.Information) == false)
-                    return;
-
-                var exceptionCnt = _exceptionQueue.Count;
-                var downloadingCnt = _downloadingList.Count;
-
-                var logString = string.Empty;
-                for (var i = 0; i < downloadingCnt; i++)
-                    logString += _downloadingList[i].URL + "\n";
-
-                var tmpLogTaskCount = _finishTaskCount + exceptionCnt + downloadingCnt;
-                if (_logTaskCount == tmpLogTaskCount)
-                    return;
-                _logTaskCount = tmpLogTaskCount;
-                logger.LogInformation($"[DownloadInfo]-total:{_totalTaskCount}, finish:{_finishTaskCount}, exception:{exceptionCnt}, downloading:{downloadingCnt} => {_logTaskCount}\n[Downloading]\n{logString.Trim()}");
-            }
 
             private ISnkDownloadTask GetPrepareDownloadTask()
             {
@@ -352,12 +323,11 @@ namespace SnkFeatureKit.Patcher
                     if (_willDownloadTaskQueue.Count > 0)
                     {
                         var tuple = _willDownloadTaskQueue.Dequeue();
-                        var url = tuple.Item1.FixSlash();
-                        var savePath = tuple.Item2.FixSlash().FixLongPath();
-                        var key = tuple.Item3;
-                        var task = CreateDownloadTaskDelegate.Invoke(url, savePath, key);
-                        //taskKeyDict[task] = tuple.Item3;
-                        return task;
+                        var downloadTask = new TDownloadTask();
+                        downloadTask.URL = tuple.Item1.FixSlash();
+                        downloadTask.SavePath = tuple.Item2.FixSlash().FixLongPath();
+                        downloadTask.Name = tuple.Item3;
+                        return downloadTask;
                     }
 
                     if (_exceptionQueue.Count == 0) 

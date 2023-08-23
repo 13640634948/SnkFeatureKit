@@ -10,7 +10,7 @@ namespace SnkFeatureKit.Patcher
 {
     public class SnkPatchBuilder
     {
-        private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository>();
+        private static readonly ILogger logger = SnkLogHost.GetLogger<SnkPatchBuilder>();
 
         private readonly string _projPath;
         private readonly string _channelName;

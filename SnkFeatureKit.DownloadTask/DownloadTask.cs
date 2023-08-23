@@ -10,14 +10,14 @@ namespace SnkFeatureKit.DownloadTask
 {
         public class SnkDownloadTask : ISnkDownloadTask
         {
-            public string Name { get; private set; } = string.Empty;
-            public string URL { get; private set; } = string.Empty;
+            public string Name { get; set; }
+            public string URL { get; set; }
 
-            public string SavePath { get; private set; } = string.Empty;
+            public string SavePath { get; set; }
 
-            public long TotalSize { get; private set; } = 0L;
+            public long TotalSize { get; set; }
 
-            public long DownloadedSize { get; private set; } = 0L;
+            public long DownloadedSize { get; set; }
 
             public bool Resume { get; private set; } = false;
 
@@ -29,15 +29,7 @@ namespace SnkFeatureKit.DownloadTask
 
             private CancellationTokenSource _cancellationTokenSource = null;
 
-
             private bool _disposed = false;
-
-            public SnkDownloadTask(string name, string url, string savePath)
-            {
-                this.Name = name;
-                this.URL = url;
-                this.SavePath = savePath;
-            }
 
             public void CancelDownload()
             {
