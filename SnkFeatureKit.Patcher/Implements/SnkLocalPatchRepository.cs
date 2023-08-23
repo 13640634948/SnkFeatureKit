@@ -38,7 +38,7 @@ namespace SnkFeatureKit.Patcher
                 this._patchCtrl = patchController;
                 this._jsonParser = jsonParser;
 
-                _localVersionFullName = Path.Combine(this.LocalPath, this._patchCtrl.Settings.localVersionDir, this._patchCtrl.Settings.versionInfoFileName);
+                _localVersionFullName = Path.Combine(this.LocalPath, this._patchCtrl.Settings.localVersionDir, this._patchCtrl.Settings.resVersionInfoFileName);
                 var fileInfo = new FileInfo(_localVersionFullName);
                 if (fileInfo.Exists == false)
                 {

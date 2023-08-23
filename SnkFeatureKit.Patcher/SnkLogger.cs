@@ -7,14 +7,11 @@ namespace SnkFeatureKit.Patcher
         public static ILogger Default { get; private set; }
         private static ILoggerFactory _loggerFactory;
 
-        public static void InitializeLogging(ILoggerFactory loggerFactory, ILoggerProvider logProvider, string defaultCategoryName = "PATCH")
+        public static void InitializeLogging(ILoggerFactory loggerFactory, string defaultCategoryName = "PATCH")
         {
-            if (loggerFactory == null || logProvider == null)
+            if (loggerFactory == null)
                 return;
-
-            loggerFactory.AddProvider(logProvider);
             _loggerFactory = loggerFactory;
-
             Default = _loggerFactory.CreateLogger(defaultCategoryName);
         }
 

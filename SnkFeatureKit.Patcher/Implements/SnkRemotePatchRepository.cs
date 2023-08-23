@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Diagnostics;
 
 using SnkFeatureKit.Patcher.Interfaces;
 using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Patcher.Exceptions;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -25,7 +27,7 @@ namespace SnkFeatureKit.Patcher
 
             private ISnkPatchController _patchCtrl;
 
-            private SnkVersionInfos _versionInfos;
+            private List<SnkVersionMeta> _resVersionList;
 
             private int _urlIndex;
 
@@ -89,6 +91,41 @@ namespace SnkFeatureKit.Patcher
                 _logTaskCount = 0;
             }
 
+            private async Task<int> RequestRemoteAppVersion(string url)
+            {
+                var appVersionURL = Path.Combine(url, _patchCtrl.ChannelName, _patchCtrl.Settings.appVersionInfoFileName);
+                var result = await SnkHttpWeb.GetAsync(appVersionURL);
+                if (result.IsError)
+                {
+                    IsError = true;
+                    ExceptionString = "获取远端版本信息失败";
+                    if(logger != null && logger.IsEnabled(LogLevel.Error))
+                        logger.LogError($"获取远端版本信息失败。URL:{appVersionURL}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
+                    return -1;
+                }
+                var content = result.ContentData;
+                var appVersionList = _jsonParser.FromJson<List<int>>(content);
+                if (appVersionList.Count <= 0)
+                    return -1;
+                return appVersionList[^1];
+            }
+
+            private async  Task<List<SnkVersionMeta>> RequestRemoteResVersionInfos(string url)
+            {
+                var resVersionUrl = Path.Combine(url, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), _patchCtrl.Settings.resVersionInfoFileName);
+                var resVersionResult = await SnkHttpWeb.GetAsync(resVersionUrl);
+                if (resVersionResult.IsError)
+                {
+                    IsError = true;
+                    ExceptionString = "获取远端版本信息失败";
+                    if(logger != null && logger.IsEnabled(LogLevel.Error))
+                        logger.LogError($"获取远端版本信息失败。URL:{resVersionUrl}\nerrText:{resVersionResult.Exception.Message}\nStackTrace{resVersionResult.Exception.StackTrace}");
+                    return null;
+                }
+                var content = resVersionResult.ContentData;
+                return  _jsonParser.FromJson<List<SnkVersionMeta>>(content);
+            }
+
             public async Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
             {
                 try
@@ -96,29 +133,21 @@ namespace SnkFeatureKit.Patcher
                     this._patchCtrl = patchController;
                     this._jsonParser = jsonParser;
 
-                    var basicURL = GetCurrURL();
-                    var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), _patchCtrl.Settings.versionInfoFileName);
-                    var result = await SnkHttpWeb.GetAsync(url);
-                    if (result.IsError)
-                    {
-                        IsError = true;
-                        ExceptionString = "获取远端版本信息失败";
-                        if(logger != null && logger.IsEnabled(LogLevel.Error))
-                            logger.LogError($"获取远端版本信息失败。URL:{url}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
-                        return false;
-                    }
-                    var content = result.ContentData;
+                    var basicUrl = GetCurrURL();
+                    var remoteAppVersion = await RequestRemoteAppVersion(basicUrl);
 
-                    _versionInfos = _jsonParser.FromJson<SnkVersionInfos>(content);
+                    if (remoteAppVersion > _patchCtrl.AppVersion)
+                        throw new SnkAppVersionException(remoteAppVersion);
+                    
+                    _resVersionList = await RequestRemoteResVersionInfos(basicUrl);
 
-                    var lastVersionIndex = _versionInfos.histories.Count - 1;
-                    Version = _versionInfos.histories[lastVersionIndex].version;
+                    var lastVersionIndex = _resVersionList.Count - 1;
+                    Version = _resVersionList[lastVersionIndex].version;
 
                     if (logger != null && logger.IsEnabled(LogLevel.Information))
                     {
                         var initializeLog = new StringBuilder();
-                        initializeLog.AppendLine($"[RemoteInit]AppVersion:{_versionInfos.appVersion}");
-                        foreach (var a in _versionInfos.histories)
+                        foreach (var a in _resVersionList)
                         {
                             initializeLog.AppendLine($"[RemoteInit]AppVersion:{a.version}|{a.size}|{a.count}|{a.code}");
                         }
@@ -137,7 +166,7 @@ namespace SnkFeatureKit.Patcher
                 return true;
             }
 
-            public List<SnkVersionMeta> GetResVersionHistories() => this._versionInfos.histories;
+            public List<SnkVersionMeta> GetResVersionHistories() => this._resVersionList;
 
             public bool Exists(string key) => this._sourceInfoList.Exists(a => a.key.Equals(key));
 
