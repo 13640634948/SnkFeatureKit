@@ -107,7 +107,7 @@ namespace SnkFeatureKit.Patcher
                 var appVersionList = _jsonParser.FromJson<List<int>>(content);
                 if (appVersionList.Count <= 0)
                     return -1;
-                return appVersionList[^1];
+                return appVersionList[appVersionList.Count-1];
             }
 
             private async  Task<List<SnkVersionMeta>> RequestRemoteResVersionInfos(string url)
