@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -9,7 +8,9 @@ using System.Diagnostics;
 
 using SnkFeatureKit.Patcher.Interfaces;
 using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Patcher.Delegates;
 using SnkFeatureKit.Patcher.Exceptions;
+using SnkFeatureKit.Patcher.Extensions;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -166,6 +167,7 @@ namespace SnkFeatureKit.Patcher
                 return true;
             }
 
+            public CreateDownloadTaskDelegate CreateDownloadTaskDelegate { get; set; }
             public List<SnkVersionMeta> GetResVersionHistories() => this._resVersionList;
 
             public bool Exists(string key) => this._sourceInfoList.Exists(a => a.key.Equals(key));
@@ -350,7 +352,9 @@ namespace SnkFeatureKit.Patcher
                     if (_willDownloadTaskQueue.Count > 0)
                     {
                         var tuple = _willDownloadTaskQueue.Dequeue();
-                        var task = new SnkDownloadTask(tuple.Item1, tuple.Item2);
+                        var url = tuple.Item1.FixSlash();
+                        var savePath = tuple.Item2.FixSlash().FixLongPath();
+                        var task = CreateDownloadTaskDelegate.Invoke(url, savePath);
                         taskKeyDict[task] = tuple.Item3;
                         return task;
                     }

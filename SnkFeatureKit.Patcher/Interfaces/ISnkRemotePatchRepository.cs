@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SnkFeatureKit.Patcher.Delegates;
 
 namespace SnkFeatureKit.Patcher
 {
     namespace Interfaces
     {
+
         public interface ISnkRemotePatchRepository : ISnkPatchRepository
         {
+            CreateDownloadTaskDelegate CreateDownloadTaskDelegate { get; set; }
+
             /// <summary>
             /// 资源版本历史
             /// </summary>
