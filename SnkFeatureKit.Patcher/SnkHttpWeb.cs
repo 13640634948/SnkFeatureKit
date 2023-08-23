@@ -17,169 +17,119 @@ namespace SnkFeatureKit.Patcher
         /// Head方法
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="timeout"></param>
+        /// <param name="timeoutMilliseconds"></param>
         /// <returns></returns>
-        public static SnkHttpHeadResult Head(string uri, int timeoutMilliseconds = 10 * 1000)
+        public static long GetContentLength(string uri, int timeoutMilliseconds = 5 * 1000)
         {
             uri = uri.FixSlash();
-            SnkHttpHeadResult result = null;
-            var code = SNK_HTTP_ERROR_CODE.succeed;
-            var httpCode = HttpStatusCode.OK;
-            Exception exception = null;
-            var length = 0L;
-            try
+            var request = WebRequest.CreateHttp(uri);
+            request.Method = "HEAD";
+            request.Timeout = timeoutMilliseconds;
+            request.KeepAlive = true;
+            long length;
+            using (var response = request.GetResponse())
             {
-                var request = WebRequest.CreateHttp(uri);
-                request.Method = "HEAD";
-                request.Timeout = timeoutMilliseconds;
-                request.KeepAlive = true;
-
-                using (var response = request.GetResponse())
+                if (response.Headers != null)
                 {
-                    if (response == null && response.Headers != null)
-                    {
-                        length = response.ContentLength;
-                        response.Close();
-                    }
-                    else
-                    {
-                        code = SNK_HTTP_ERROR_CODE.can_not_find_length;
-                        exception = new System.Exception($"服务器没有返回content-length,无法获取文件长度\n访问地址:{uri}");
-                    }
+                    length = response.ContentLength;
+                    response.Close();
+                }
+                else
+                {
+                    throw new Exception($"服务器没有返回content-length,无法获取文件长度\n访问地址:{uri}");
                 }
             }
-            catch (Exception e)
-            {
-                code = SNK_HTTP_ERROR_CODE.error;
-                exception = new System.Exception($"请求{uri}出现异常\n异常信息:{e.Message}\n异常堆栈:{e.StackTrace}");
-            }
-            finally
-            {
-                result = new SnkHttpHeadResult(code, httpCode, exception, length);
-            }
-            return result;
+            return length;
         }
 
         /// <summary>
         /// Get方法
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="timeout"></param>
+        /// <param name="timeoutMilliseconds"></param>
         /// <returns></returns>
-        public static SnkHttpGetResult Get(string uri, int timeoutMilliseconds = 10 * 1000, int buffSize = 1024 * 8)
+        public static string Get(string uri, int timeoutMilliseconds = 5 * 1000)
         {
             uri = uri.FixSlash();
-            SnkHttpGetResult result = null;
-            var code = SNK_HTTP_ERROR_CODE.succeed;
-            var httpCode = HttpStatusCode.OK;
-            Exception exception = null;
-            string contentData = null;
-            try
-            {
-                var request = WebRequest.CreateHttp(uri);
-                request.Method = "GET";
-                request.Timeout = timeoutMilliseconds;
-                request.KeepAlive = true;
+            var request = WebRequest.CreateHttp(uri);
+            request.Method = "GET";
+            request.Timeout = timeoutMilliseconds;
+            request.KeepAlive = true;
 
-                using (var response = request.GetResponse())
+            string contentData;
+            using (var response = request.GetResponse())
+            {
+                using (var responseStream = response.GetResponseStream())
                 {
-                    using (var responseStream = response.GetResponseStream())
+                    if (responseStream == null)
+                        throw new ArgumentNullException($"responseStream is null.Url:{uri}");
+                    
+                    using (var readStream = new StreamReader(responseStream))
                     {
-                        using (var readStream = new StreamReader(responseStream))
-                        {
-                            contentData = readStream.ReadToEnd();
-                            readStream.Close();
-                        }
-                        responseStream.Close();
+                        contentData = readStream.ReadToEnd();
+                        readStream.Close();
                     }
-                    response.Close();
+                    responseStream.Close();
                 }
+                response.Close();
             }
-            catch (Exception e)
-            {
-                code = SNK_HTTP_ERROR_CODE.error;
-                exception = new System.Exception($"请求{uri}出现异常\n异常信息:{e.Message}\n异常堆栈:{e.StackTrace}");
-            }
-            finally
-            {
-                result = new SnkHttpGetResult(code, httpCode, exception, contentData);
-            }
-            return result;
+
+            return contentData;
         }
 
         /// <summary>
         /// Post方法
         /// </summary>
         /// <param name="uri"></param>
-        /// <param name="content"></param>
-        /// <param name="timeout"></param>
+        /// <param name="postContent"></param>
+        /// <param name="timeoutMilliseconds"></param>
         /// <returns></returns>
-        public static SnkHttpPostResult Post(string uri, string postContent, int timeoutMilliseconds = 10 * 1000)
+        public static Dictionary<string, string> Post(string uri, string postContent, int timeoutMilliseconds = 5 * 1000)
         {
             uri = uri.FixSlash();
-            SnkHttpPostResult result = null;
-            var code = SNK_HTTP_ERROR_CODE.succeed;
-            var httpCode = HttpStatusCode.OK;
-            Exception exception = null;
 
+            var request = WebRequest.CreateHttp(uri);
+            request.Method = "POST";
+            request.Timeout = timeoutMilliseconds;
+            request.KeepAlive = true;
+            request.ContentType = "application/json";
 
-            byte[] postContentBytes = null;
             Dictionary<string, string> rspHeadDict = null;
 
-            try
+            if (string.IsNullOrEmpty(postContent) == false)
             {
-                var request = WebRequest.CreateHttp(uri);
-                request.Method = "POST";
-                request.Timeout = timeoutMilliseconds;
-                request.KeepAlive = true;
-                request.ContentType = "application/json";
-
-                if (string.IsNullOrEmpty(postContent))
+                var postContentBytes = Encoding.UTF8.GetBytes(postContent);
+                request.ContentLength = postContentBytes.Length;
+                using (var requestStream = request.GetRequestStream())
                 {
-                    postContentBytes = Encoding.UTF8.GetBytes(postContent);
-                    request.ContentLength = postContentBytes.Length;
-                    using (var requestStream = request.GetRequestStream())
-                    {
-                        requestStream.Write(postContentBytes, 0, postContentBytes.Length);
-                        requestStream.Close();
-                    }
-                }
-
-                using (var response = request.GetResponse())
-                {
-                    if (response.Headers != null && response.Headers.Count > 0)
-                    {
-                        rspHeadDict = new Dictionary<string, string>();
-                        for (int i = 0; i < response.Headers.Count; i++)
-                        {
-                            var key = response.Headers.GetKey(i);
-                            var value = response.Headers.Get(key);
-                            rspHeadDict[key] = value;
-                        }
-                    }
-                    response.Close();
+                    requestStream.Write(postContentBytes, 0, postContentBytes.Length);
+                    requestStream.Close();
                 }
             }
-            catch (Exception e)
-            {
-                code = SNK_HTTP_ERROR_CODE.error;
-                exception = new System.Exception($"请求{uri}出现异常\n异常信息:{e.Message}\n异常堆栈:{e.StackTrace}");
-            }
-            finally
-            {
-                result = new SnkHttpPostResult(code, httpCode, exception, rspHeadDict, postContentBytes);
-            }
 
-            return result;
+            using (var response = request.GetResponse())
+            {
+                if (response.Headers != null && response.Headers.Count > 0)
+                {
+                    rspHeadDict = new Dictionary<string, string>();
+                    for (var i = 0; i < response.Headers.Count; i++)
+                    {
+                        var key = response.Headers.GetKey(i);
+                        var value = response.Headers.Get(key);
+                        rspHeadDict[key] = value;
+                    }
+                }
+                response.Close();
+            }
+            return rspHeadDict;
         }
 
-        public static Task<SnkHttpHeadResult> HeadAsync(string uri, int timeoutMilliseconds = 10 * 1000)
-            => Task.Run(() => Head(uri, timeoutMilliseconds));
-
-        public static Task<SnkHttpGetResult> GetAsync(string uri, int timeoutMilliseconds = 10 * 1000)
+        public static Task<long> GetContentLengthAsync(string uri, int timeoutMilliseconds = 10 * 1000)
+            => Task.Run(() => GetContentLength(uri, timeoutMilliseconds));
+        public static Task<string> GetAsync(string uri, int timeoutMilliseconds = 10 * 1000)
             => Task.Run(() => Get(uri, timeoutMilliseconds));
 
-        public static Task<SnkHttpPostResult> PostAsync(string uri, string postContent, int timeoutMilliseconds = 10 * 1000)
+        public static Task<Dictionary<string, string>> PostAsync(string uri, string postContent, int timeoutMilliseconds = 10 * 1000)
             => Task.Run(() => Post(uri, postContent, timeoutMilliseconds));
     }
 }

@@ -5,7 +5,6 @@ namespace SnkFeatureKit.Patcher
 {
     namespace Interfaces
     {
-
         public interface ISnkRemotePatchRepository : ISnkPatchRepository
         {
             /// <summary>
@@ -37,6 +36,11 @@ namespace SnkFeatureKit.Patcher
             /// 近期速度
             /// </summary>
             long RecentSpeed { get; }
+
+            /// <summary>
+            /// 限制下载速度
+            /// </summary>
+            long LimitDownloadSpeed { get; set; }
         }
     }
 }

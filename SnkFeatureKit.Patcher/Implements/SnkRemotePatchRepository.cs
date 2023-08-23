@@ -19,7 +19,6 @@ namespace SnkFeatureKit.Patcher
             where TDownloadTask : class, ISnkDownloadTask, new()
         {
             private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository<TDownloadTask>>();
- 
 
             public ushort Version { get; private set; }
 
@@ -80,43 +79,52 @@ namespace SnkFeatureKit.Patcher
             /// </summary>
             public long RecentSpeed { get; protected set; }
 
+            public long LimitDownloadSpeed { get; set; } = -1;
+
             private long RecordSpeedTime = 10;
 
             private long prevDownloadSize;
 
             private async Task<int> RequestRemoteAppVersion(string url)
             {
-                var appVersionURL = Path.Combine(url, _patchCtrl.ChannelName, _patchCtrl.Settings.appVersionInfoFileName);
-                var result = await SnkHttpWeb.GetAsync(appVersionURL);
-                if (result.IsError)
+                var appVersionUrl = Path.Combine(url, _patchCtrl.ChannelName, _patchCtrl.Settings.appVersionInfoFileName);
+                try
+                {
+                    var content = await SnkHttpWeb.GetAsync(appVersionUrl);
+
+                    var appVersionList = _jsonParser.FromJson<List<int>>(content);
+                    if (appVersionList.Count <= 0)
+                        return -1;
+                    return appVersionList[appVersionList.Count - 1];
+                }
+                catch (Exception e)
                 {
                     IsError = true;
                     ExceptionString = "获取远端版本信息失败";
                     if(logger != null && logger.IsEnabled(LogLevel.Error))
-                        logger.LogError($"获取远端版本信息失败。URL:{appVersionURL}\nerrText:{result.Exception.Message}\nStackTrace{result.Exception.StackTrace}");
-                    return -1;
+                        logger.LogError($"获取远端版本信息失败。URL:{appVersionUrl}\nerrText:{e.Message}\nStackTrace{e.StackTrace}");
                 }
-                var content = result.ContentData;
-                var appVersionList = _jsonParser.FromJson<List<int>>(content);
-                if (appVersionList.Count <= 0)
-                    return -1;
-                return appVersionList[appVersionList.Count-1];
+                return -1;
             }
 
             private async  Task<List<SnkVersionMeta>> RequestRemoteResVersionInfos(string url)
             {
                 var resVersionUrl = Path.Combine(url, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), _patchCtrl.Settings.resVersionInfoFileName);
-                var resVersionResult = await SnkHttpWeb.GetAsync(resVersionUrl);
-                if (resVersionResult.IsError)
+                try
+                {
+                    var content = await SnkHttpWeb.GetAsync(resVersionUrl);
+                    return  _jsonParser.FromJson<List<SnkVersionMeta>>(content);
+
+                }
+                catch (Exception e)
                 {
                     IsError = true;
                     ExceptionString = "获取远端版本信息失败";
                     if(logger != null && logger.IsEnabled(LogLevel.Error))
-                        logger.LogError($"获取远端版本信息失败。URL:{resVersionUrl}\nerrText:{resVersionResult.Exception.Message}\nStackTrace{resVersionResult.Exception.StackTrace}");
-                    return null;
+                        logger.LogError($"获取远端版本信息失败。URL:{resVersionUrl}\nerrText:{e.Message}\nStackTrace{e.StackTrace}");
                 }
-                var content = resVersionResult.ContentData;
-                return  _jsonParser.FromJson<List<SnkVersionMeta>>(content);
+                return null;
+
             }
 
             public async Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
@@ -191,20 +199,18 @@ namespace SnkFeatureKit.Patcher
             {
                 var basicURL = GetCurrURL();
                 var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), version.ToString(), _patchCtrl.Settings.manifestFileName);
-                var result = await SnkHttpWeb.GetAsync(url);
-                if (result.IsError)
+                try
+                {
+                    var content = await SnkHttpWeb.GetAsync(url);
+                    this._sourceInfoList = _jsonParser.FromJson<List<SnkSourceInfo>>(content);
+                    return this._sourceInfoList;
+                }
+                catch (Exception e)
                 {
                     IsError = true;
                     ExceptionString = "获取远端资源列表失败";
-                    throw new AggregateException("获取远端资源列表失败。URL:" + url + "\nerrText:" + result.Exception.Message + "\n" + result.Exception.StackTrace);
+                    throw new AggregateException("获取远端资源列表失败。URL:" + url + "\nerrText:" + e.Message + "\n" + e.StackTrace);
                 }
-
-                if (logger != null && logger.IsEnabled(LogLevel.Information))
-                    logger.LogInformation("url:" + url);
-
-                var content = result.ContentData;
-                this._sourceInfoList = _jsonParser.FromJson<List<SnkSourceInfo>>(content);
-                return this._sourceInfoList;
             }
 
             public void EnqueueDownloadQueue(string dirPath, string key, int resVersion)
@@ -228,6 +234,17 @@ namespace SnkFeatureKit.Patcher
                     AverageSpeed = DownloadedSize / _stopwatch.ElapsedMilliseconds * 1000;
                     InstantaneousSpeed = DownloadedSize - prevDownloadSize;
                     prevDownloadSize = DownloadedSize;
+
+                    if (_downloadingList != null && _downloadingList.Count > 0 && LimitDownloadSpeed > 0)
+                    {
+                        foreach (var downloadTask in _downloadingList)
+                        {
+                            if(InstantaneousSpeed >= LimitDownloadSpeed)
+                                downloadTask.Pause();
+                            else
+                                downloadTask.Resume();
+                        }
+                    }
 
                     _speedCacheList.Add(new Tuple<long, long>(_stopwatch.ElapsedMilliseconds, DownloadedSize));
                     while (_speedCacheList.Count > RecordSpeedTime)
@@ -268,27 +285,25 @@ namespace SnkFeatureKit.Patcher
                                 for (var i = 0; i < _downloadingList.Count; i++)
                                 {
                                     var task = _downloadingList[i];
-                                    if (task.IsCompleted == false)
+
+                                    if (task.State != SNK_DOWNLOAD_STATE.completed)
                                         continue;
 
-                                    //var key = taskKeyDict[task];
-
-                                    if (task.DownloadResult.Code == SNK_HTTP_ERROR_CODE.succeed)
+                                    if (task.DownloadException != null)
+                                    {
+                                        _exceptionQueue.Enqueue(new Tuple<string, string, string>(task.Url, task.SavePath, task.Name));
+                                        _downloadingList[i] = null;
+                                    }
+                                    else
                                     {
                                         this._finishTaskCount++;
                                         this._currDownloadedSize += task.TotalSize;
                                         onPreDownloadTask(task.Name);
                                     }
-                                    else
-                                    {
-                                        _exceptionQueue.Enqueue(new Tuple<string, string, string>(task.URL, task.SavePath, task.Name));
-                                        task.CancelDownload();
-                                        task.Dispose();
-                                        _downloadingList[i] = null;
-                                    }
+                                    task.Dispose();
                                     _downloadingList.RemoveAt(i--);
                                 }
-
+                                
                                 var implementTaskCount = this._maxThreadNumber - _downloadingList.Count;
                                 for (var i = 0; i < implementTaskCount; i++)
                                 {
@@ -324,7 +339,7 @@ namespace SnkFeatureKit.Patcher
                     {
                         var tuple = _willDownloadTaskQueue.Dequeue();
                         var downloadTask = new TDownloadTask();
-                        downloadTask.URL = tuple.Item1.FixSlash();
+                        downloadTask.Url = tuple.Item1.FixSlash();
                         downloadTask.SavePath = tuple.Item2.FixSlash().FixLongPath();
                         downloadTask.Name = tuple.Item3;
                         return downloadTask;
@@ -376,7 +391,7 @@ namespace SnkFeatureKit.Patcher
                         if (_downloadingList != null)
                         {
                             foreach (var task in _downloadingList)
-                                task.CancelDownload();
+                                task.Cancel();
                             _downloadingList.Clear();
                             _downloadingList = null;
                         }
