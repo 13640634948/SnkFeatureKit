@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.ContentDelive
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.Asynchronous", "SnkFeatureKit.Asynchronous\SnkFeatureKit.Asynchronous.csproj", "{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnkFeatureKit.DownloadTask", "SnkFeatureKit.DownloadTask\SnkFeatureKit.DownloadTask.csproj", "{63566F10-1C47-4594-9CB7-1F823FC87F19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,5 +27,9 @@ Global
 		{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81E1F75B-C635-4AF0-9DB6-5041EFE95B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63566F10-1C47-4594-9CB7-1F823FC87F19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63566F10-1C47-4594-9CB7-1F823FC87F19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63566F10-1C47-4594-9CB7-1F823FC87F19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63566F10-1C47-4594-9CB7-1F823FC87F19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
