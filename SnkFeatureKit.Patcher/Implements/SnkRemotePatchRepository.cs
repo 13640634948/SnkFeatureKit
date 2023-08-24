@@ -293,15 +293,22 @@ namespace SnkFeatureKit.Patcher
                                     {
                                         _exceptionQueue.Enqueue(new Tuple<string, string, string>(task.Url, task.SavePath, task.Name));
                                         _downloadingList[i] = null;
+                                        
+                                        if (logger != null && logger.IsEnabled(LogLevel.Error))
+                                            logger.LogError($"[DownloadException]{task.Url}\n{task.DownloadException.Message}");
                                     }
                                     else
                                     {
                                         this._finishTaskCount++;
                                         this._currDownloadedSize += task.TotalSize;
                                         onPreDownloadTask(task.Name);
+                                        
+                                        if (logger != null && logger.IsEnabled(LogLevel.Information))
+                                            logger.LogInformation($"[DownloadFinish]{task.Url}");
                                     }
                                     task.Dispose();
                                     _downloadingList.RemoveAt(i--);
+                                    
                                 }
                                 
                                 var implementTaskCount = this._maxThreadNumber - _downloadingList.Count;
@@ -315,6 +322,19 @@ namespace SnkFeatureKit.Patcher
                                 }
                             }
 
+                            if (logger != null && logger.IsEnabled(LogLevel.Information))
+                            {
+                                var stringBuilder = new StringBuilder();
+                                stringBuilder.AppendLine($"[DownloadingState]cnt:{_downloadingList.Count}");
+                                foreach (var downloadTask in _downloadingList)
+                                {
+                                    stringBuilder.AppendLine($"{downloadTask.Url}:{downloadTask.State}");
+                                }
+                                logger.LogInformation($"{stringBuilder}");
+                            }
+
+                            
+                            
                             System.Threading.Thread.Sleep(_threadTickInterval);
                             if (_disposed)
                                 return false;
@@ -342,6 +362,9 @@ namespace SnkFeatureKit.Patcher
                         downloadTask.Url = tuple.Item1.FixSlash();
                         downloadTask.SavePath = tuple.Item2.FixSlash().FixLongPath();
                         downloadTask.Name = tuple.Item3;
+                        
+                        if (logger != null && logger.IsEnabled(LogLevel.Information))
+                            logger.LogInformation($"[CreateDownloadTask]{downloadTask.Url}");
                         return downloadTask;
                     }
 
