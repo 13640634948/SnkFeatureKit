@@ -84,7 +84,7 @@ namespace SnkFeatureKit.Patcher
         /// <param name="postContent"></param>
         /// <param name="timeoutMilliseconds"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> Post(string uri, string postContent, int timeoutMilliseconds = 5 * 1000)
+        public static Tuple<Dictionary<string, string>, string> Post(string uri, string postContent, int timeoutMilliseconds = 5 * 1000)
         {
             uri = uri.FixSlash();
 
@@ -95,6 +95,7 @@ namespace SnkFeatureKit.Patcher
             request.ContentType = "application/json";
 
             Dictionary<string, string> rspHeadDict = null;
+            string contentData = null;
 
             if (string.IsNullOrEmpty(postContent) == false)
             {
@@ -119,9 +120,22 @@ namespace SnkFeatureKit.Patcher
                         rspHeadDict[key] = value;
                     }
                 }
+
+                using (var responseStream = response.GetResponseStream())
+                {
+                    if (responseStream == null)
+                        throw new ArgumentNullException($"responseStream is null.Url:{uri}");
+                    
+                    using (var readStream = new StreamReader(responseStream))
+                    {
+                        contentData = readStream.ReadToEnd();
+                        readStream.Close();
+                    }
+                    responseStream.Close();
+                }
                 response.Close();
             }
-            return rspHeadDict;
+            return new Tuple<Dictionary<string, string>, string>(rspHeadDict, contentData);
         }
 
         public static Task<long> GetContentLengthAsync(string uri, int timeoutMilliseconds = 10 * 1000)
@@ -129,7 +143,7 @@ namespace SnkFeatureKit.Patcher
         public static Task<string> GetAsync(string uri, int timeoutMilliseconds = 10 * 1000)
             => Task.Run(() => Get(uri, timeoutMilliseconds));
 
-        public static Task<Dictionary<string, string>> PostAsync(string uri, string postContent, int timeoutMilliseconds = 10 * 1000)
+        public static Task<Tuple<Dictionary<string, string>, string>> PostAsync(string uri, string postContent, int timeoutMilliseconds = 10 * 1000)
             => Task.Run(() => Post(uri, postContent, timeoutMilliseconds));
     }
 }
