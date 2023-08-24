@@ -66,6 +66,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Abstracts\SnkStorage.cs" />
+        <Compile Include="Implements\SnkBFSStorage.cs" />
         <Compile Include="Implements\SnkCOSStorage.cs" />
         <Compile Include="Implements\SnkOBSStorage.cs" />
         <Compile Include="Implements\SnkOSSStorage.cs" />
