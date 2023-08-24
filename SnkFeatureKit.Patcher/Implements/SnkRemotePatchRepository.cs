@@ -235,17 +235,6 @@ namespace SnkFeatureKit.Patcher
                     InstantaneousSpeed = DownloadedSize - prevDownloadSize;
                     prevDownloadSize = DownloadedSize;
 
-                    if (_downloadingList != null && _downloadingList.Count > 0 && LimitDownloadSpeed > 0)
-                    {
-                        foreach (var downloadTask in _downloadingList)
-                        {
-                            if(InstantaneousSpeed >= LimitDownloadSpeed)
-                                downloadTask.Pause();
-                            else
-                                downloadTask.Resume();
-                        }
-                    }
-
                     _speedCacheList.Add(new Tuple<long, long>(_stopwatch.ElapsedMilliseconds, DownloadedSize));
                     while (_speedCacheList.Count > RecordSpeedTime)
                         _speedCacheList.RemoveAt(0);
