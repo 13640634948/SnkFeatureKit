@@ -14,9 +14,9 @@ proj_array[2]="SnkFeatureKit.Patcher"
 
 for (( i = 0; i < ${#proj_array[@]}; i++ )); do
 	proj_name=${proj_array[$i]}
-#	nuget pack $proj_name/$proj_name.csproj -Version $version -OutputDirectory $directory/$version -Properties Configuration=$configuration
-	dotnet build $proj_name/$proj_name.csproj -c:$configuration
-	dotnet pack -o $directory/$version -p:PackageVersion=$version -c:$configuration
+	nuget pack $proj_name/$proj_name.csproj -Version $version -OutputDirectory $directory/$version -Properties Configuration=$configuration
+#	dotnet build $proj_name/$proj_name.csproj -c:$configuration
+#	dotnet pack -o $directory/$version -p:PackageVersion=$version -c:$configuration
 done
 
 
