@@ -40,6 +40,7 @@ namespace SnkFeatureKit.Patcher
 
             public void DownloadFile(int buffSize = 65536, bool resume = false)
             {
+                State = SNK_DOWNLOAD_STATE.downloading;
                 FileStream fileStream = null;
                 try
                 {
@@ -85,6 +86,10 @@ namespace SnkFeatureKit.Patcher
                                     {
                                         fileStream.Write(buffer, 0, len);
                                         this.DownloadedSize += len;
+                                    }
+                                    else
+                                    {
+                                        break;
                                     }
                                 }
                                 fileStream.Flush();
