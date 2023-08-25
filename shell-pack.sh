@@ -8,8 +8,8 @@ source="https://api.nuget.org/v3/index.json"
 
 proj_array[0]="SnkFeatureKit.Asynchronous"
 proj_array[1]="SnkFeatureKit.ContentDelivery"
-#proj_array[2]="SnkFeatureKit.Logging"
 proj_array[2]="SnkFeatureKit.Patcher"
+proj_array[3]="SnkFeatureKit.Logging"
 
 
 for (( i = 0; i < ${#proj_array[@]}; i++ )); do

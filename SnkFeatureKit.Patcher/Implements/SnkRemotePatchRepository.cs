@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 
 using SnkFeatureKit.Patcher.Interfaces;
-using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Logging;
 using SnkFeatureKit.Patcher.Exceptions;
 using SnkFeatureKit.Patcher.Extensions;
 
@@ -18,7 +18,7 @@ namespace SnkFeatureKit.Patcher
         public class SnkRemotePatchRepository<TDownloadTask> : ISnkRemotePatchRepository
             where TDownloadTask : class, ISnkDownloadTask, new()
         {
-            private static readonly ILogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository<TDownloadTask>>();
+            private static readonly ISnkLogger logger = SnkLogHost.GetLogger<SnkRemotePatchRepository<TDownloadTask>>();
 
             public ushort Version { get; private set; }
 
@@ -101,7 +101,7 @@ namespace SnkFeatureKit.Patcher
                 {
                     IsError = true;
                     ExceptionString = "获取远端版本信息失败";
-                    if(logger != null && logger.IsEnabled(LogLevel.Error))
+                    if(logger != null && logger.IsEnabled(SnkLogLevel.Error))
                         logger.LogError($"获取远端版本信息失败。URL:{appVersionUrl}\nerrText:{e.Message}\nStackTrace{e.StackTrace}");
                 }
                 return -1;
@@ -120,7 +120,7 @@ namespace SnkFeatureKit.Patcher
                 {
                     IsError = true;
                     ExceptionString = "获取远端版本信息失败";
-                    if(logger != null && logger.IsEnabled(LogLevel.Error))
+                    if(logger != null && logger.IsEnabled(SnkLogLevel.Error))
                         logger.LogError($"获取远端版本信息失败。URL:{resVersionUrl}\nerrText:{e.Message}\nStackTrace{e.StackTrace}");
                 }
                 return null;
@@ -145,7 +145,7 @@ namespace SnkFeatureKit.Patcher
                     var lastVersionIndex = _resVersionList.Count - 1;
                     Version = _resVersionList[lastVersionIndex].version;
 
-                    if (logger != null && logger.IsEnabled(LogLevel.Information))
+                    if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
                     {
                         var initializeLog = new StringBuilder();
                         foreach (var a in _resVersionList)
@@ -153,14 +153,14 @@ namespace SnkFeatureKit.Patcher
                             initializeLog.AppendLine($"[RemoteInit]AppVersion:{a.version}|{a.size}|{a.count}|{a.code}");
                         }
                         initializeLog.AppendLine($"[RemoteInit]Version:{Version}");
-                        logger.LogInformation(initializeLog.ToString());
+                        logger.LogInfo(initializeLog.ToString());
                     }
                 }
                 catch (Exception exception)
                 {
                     IsError = true;
                     ExceptionString = "初始化远端仓库出现未知异常";
-                    if(logger!= null && logger.IsEnabled(LogLevel.Error))
+                    if(logger!= null && logger.IsEnabled(SnkLogLevel.Error))
                         logger?.LogError(exception, "[SnkRemotePatchRepository.Initialize]");
                     return false;
                 }
@@ -254,8 +254,8 @@ namespace SnkFeatureKit.Patcher
 
             public async Task<bool> StartupDownload(System.Action<string> onPreDownloadTask)
             {
-                if (logger != null && logger.IsEnabled(LogLevel.Information))
-                    logger.LogInformation($"[StartDownload] thread number:{this._maxThreadNumber}");
+                if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                    logger.LogInfo($"[StartDownload] thread number:{this._maxThreadNumber}");
 
                 StartRecordDownloadSpeed();
 
@@ -283,7 +283,7 @@ namespace SnkFeatureKit.Patcher
                                         _exceptionQueue.Enqueue(new Tuple<string, string, string>(task.Url, task.SavePath, task.Name));
                                         _downloadingList[i] = null;
                                         
-                                        if (logger != null && logger.IsEnabled(LogLevel.Error))
+                                        if (logger != null && logger.IsEnabled(SnkLogLevel.Error))
                                             logger.LogError($"[DownloadException]{task.Url}\n{task.DownloadException.Message}");
                                     }
                                     else
@@ -292,8 +292,8 @@ namespace SnkFeatureKit.Patcher
                                         this._currDownloadedSize += task.TotalSize;
                                         onPreDownloadTask(task.Name);
                                         
-                                        if (logger != null && logger.IsEnabled(LogLevel.Information))
-                                            logger.LogInformation($"[DownloadFinish]{task.Url}");
+                                        if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                                            logger.LogInfo($"[DownloadFinish]{task.Url}");
                                     }
                                     task.Dispose();
                                     _downloadingList.RemoveAt(i--);
@@ -311,7 +311,7 @@ namespace SnkFeatureKit.Patcher
                                 }
                             }
 
-                            if (logger != null && logger.IsEnabled(LogLevel.Information))
+                            if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
                             {
                                 var stringBuilder = new StringBuilder();
                                 stringBuilder.AppendLine($"[DownloadingState]cnt:{_downloadingList.Count}");
@@ -319,7 +319,7 @@ namespace SnkFeatureKit.Patcher
                                 {
                                     stringBuilder.AppendLine($"{downloadTask.Url}:{downloadTask.State}");
                                 }
-                                logger.LogInformation($"{stringBuilder}");
+                                logger.LogInfo($"{stringBuilder}");
                             }
 
                             
@@ -331,8 +331,8 @@ namespace SnkFeatureKit.Patcher
                     }
                     catch (Exception ex)
                     {
-                        if (logger != null && logger.IsEnabled(LogLevel.Error))
-                            logger.LogError(ex, $"[{this}.StartupDownload]");
+                        if (logger != null && logger.IsEnabled(SnkLogLevel.Error))
+                            logger.LogError(ex);
                         throw;
                     }
                     return true;
@@ -352,8 +352,8 @@ namespace SnkFeatureKit.Patcher
                         downloadTask.SavePath = tuple.Item2.FixSlash().FixLongPath();
                         downloadTask.Name = tuple.Item3;
                         
-                        if (logger != null && logger.IsEnabled(LogLevel.Information))
-                            logger.LogInformation($"[CreateDownloadTask]{downloadTask.Url}");
+                        if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                            logger.LogInfo($"[CreateDownloadTask]{downloadTask.Url}");
                         return downloadTask;
                     }
 

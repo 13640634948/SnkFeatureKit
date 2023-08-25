@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Logging;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
@@ -34,8 +33,8 @@ namespace SnkFeatureKit.Patcher
 
                 var bag = new ConcurrentBag<SnkSourceInfo>();
 
-                if(logger != null && logger.IsEnabled(LogLevel.Information))
-                    logger.LogInformation($"[SnkFullCheckLocalPatchRepository]LocalPath:{this.LocalPath}");
+                if(logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                    logger.LogInfo($"[SnkFullCheckLocalPatchRepository]LocalPath:{this.LocalPath}");
 
                 try
                 {

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>SnkFeatureKit.Patcher</id>
+    <version>1.3.12</version>
+    <title>SnkFeatureKit.Patcher</title>
+    <authors>clainele</authors>
+    <description>Description</description>
+    <copyright>Copyright ©  2023</copyright>
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Aliyun.OSS.SDK" version="2.13.0" />
+        <dependency id="HuaweiCloud.ESDK.OBS" version="3.22.11.4" />
+        <dependency id="Tencent.QCloud.Cos.Sdk" version="5.4.34" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

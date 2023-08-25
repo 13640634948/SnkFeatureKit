@@ -3,13 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using SnkFeatureKit.Patcher.Extensions;
 using SnkFeatureKit.Patcher.Interfaces;
 using SnkFeatureKit.Patcher.Implements;
-using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Logging;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -38,8 +37,8 @@ namespace SnkFeatureKit.Patcher
         {
             if (fileFinder.TrySurvey(out var fileInfos) == false)
             {
-                if(SnkLogHost.Default != null && SnkLogHost.Default.IsEnabled(LogLevel.Warning))
-                    SnkLogHost.Default.LogWarning("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
+                if(SnkLogHost.Default != null && SnkLogHost.Default.IsEnabled(SnkLogLevel.Warn))
+                    SnkLogHost.Default.LogWarn("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
                 return null;
             }
 

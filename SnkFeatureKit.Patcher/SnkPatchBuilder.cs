@@ -2,15 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using SnkFeatureKit.Patcher.Implements;
+using SnkFeatureKit.Logging;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
 {
     public class SnkPatchBuilder
     {
-        private static readonly ILogger logger = SnkLogHost.GetLogger<SnkPatchBuilder>();
+        private static readonly ISnkLogger logger = SnkLogHost.GetLogger<SnkPatchBuilder>();
 
         private readonly string _projPath;
         private readonly string _channelName;
@@ -56,8 +55,8 @@ namespace SnkFeatureKit.Patcher
                 throw new System.Exception("finderList is null or len = 0");
             }
 
-            if(logger != null && logger.IsEnabled(LogLevel.Information))
-                logger.LogInformation(Path.GetFullPath(this._projPath));
+            if(logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                logger.LogInfo(Path.GetFullPath(this._projPath));
 
             var channelPath = Path.Combine(this._projPath, this._channelName);
             

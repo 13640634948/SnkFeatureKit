@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.IO;
 
 using SnkFeatureKit.Patcher.Interfaces;
-using Microsoft.Extensions.Logging;
+using SnkFeatureKit.Logging;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -12,7 +12,7 @@ namespace SnkFeatureKit.Patcher
     {
         public class SnkLocalPatchRepository : ISnkLocalPatchRepository
         {
-            protected static readonly ILogger logger = SnkLogHost.GetLogger<SnkLocalPatchRepository>();
+            protected static readonly ISnkLogger logger = SnkLogHost.GetLogger<SnkLocalPatchRepository>();
 
             public ushort Version => _localSourceInfos.resVersion;
 
@@ -57,8 +57,8 @@ namespace SnkFeatureKit.Patcher
 
             public virtual Task<List<SnkSourceInfo>> GetSourceInfoList(ushort version = 0)
             {
-                if(logger != null && logger.IsEnabled(LogLevel.Information))
-                    logger.LogInformation($"[RemoteRepo]GetSourceInfoList.fromVersion:{version}");
+                if(logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                    logger.LogInfo($"[RemoteRepo]GetSourceInfoList.fromVersion:{version}");
 
                 return Task.FromResult(sourceInfoList);
             }
