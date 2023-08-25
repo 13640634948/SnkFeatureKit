@@ -8,9 +8,14 @@ namespace SnkFeatureKit.Patcher
             public string manifestFileName = "manifest.json";
 
             /// <summary>
-            /// 版本信息文件
+            /// 资源版本信息文件
             /// </summary>
-            public string versionInfoFileName = "version.json";
+            public string appVersionInfoFileName = "app_version.json";
+            
+            /// <summary>
+            /// 资源版本信息文件
+            /// </summary>
+            public string resVersionInfoFileName = "res_version.json";
 
             /// <summary>
             /// 版本资源中间目录

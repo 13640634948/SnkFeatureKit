@@ -4,14 +4,14 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{A6BD778A-E2D3-48E4-8A4C-D2A18BFCD108}</ProjectGuid>
+        <ProjectGuid>{83C6055C-5385-4AEE-8F78-777ECA9BCFEC}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>SnkPathcer</RootNamespace>
+        <RootNamespace>SnkFeatureKit.Patch</RootNamespace>
         <AssemblyName>SnkFeatureKit.Patcher</AssemblyName>
-        <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
-        <LangVersion>6</LangVersion>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,13 +33,21 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="mscorlib" />
+        <Reference Include="SnkFeatureKit.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <HintPath>..\packages\SnkFeatureKit.Logging.1.3.10\lib\net462\SnkFeatureKit.Logging.dll</HintPath>
+        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
+        <Reference Include="System.Numerics" />
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Extension\SnkExtension.cs" />
+        <Compile Include="Exceptions\SnkAppVersionException.cs" />
+        <Compile Include="Exceptions\SnkException.cs" />
+        <Compile Include="Extensions\StringExtension.cs" />
         <Compile Include="Implements\SnkDownloadTask.cs" />
         <Compile Include="Implements\SnkFileFinder.cs" />
         <Compile Include="Implements\SnkFullCheckLocalPatchRepository.cs" />
@@ -56,7 +64,6 @@
         <Compile Include="Interfaces\ISnkPatchRepository.cs" />
         <Compile Include="Interfaces\ISnkRemotePatchRepository.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="SnkHttpResult.cs" />
         <Compile Include="SnkHttpWeb.cs" />
         <Compile Include="SnkLocalSourceInfos.cs" />
         <Compile Include="SnkPatch.cs" />
@@ -64,15 +71,17 @@
         <Compile Include="SnkPatchControlSettings.cs" />
         <Compile Include="SnkPatchSettings.cs" />
         <Compile Include="SnkSourceInfo.cs" />
-        <Compile Include="SnkVersionInfos.cs" />
         <Compile Include="SnkVersionMeta.cs" />
-        <Compile Include="SNK_HTTP_ERROR_CODE.cs" />
+        <Compile Include="SNK_DOWNLOAD_STATE.cs" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj">
-        <Project>{9dcf2fd8-18aa-461e-97c9-bcd18e31c74d}</Project>
+        <Project>{d7ff5721-c211-4824-a6bc-75f6e4c6fb45}</Project>
         <Name>SnkFeatureKit.Logging</Name>
       </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="packages.config" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

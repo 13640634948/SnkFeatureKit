@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,7 +33,9 @@ namespace SnkFeatureKit.Patcher
 
                 var bag = new ConcurrentBag<SnkSourceInfo>();
 
-                SnkLogHost.Default?.Debug($"[SnkFullCheckLocalPatchRepository]LocalPath:{this.LocalPath}");
+                if(logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                    logger.LogInfo($"[SnkFullCheckLocalPatchRepository]LocalPath:{this.LocalPath}");
+
                 try
                 {
                     var rootDirInfo = new DirectoryInfo(this.LocalPath);

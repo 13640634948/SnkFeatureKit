@@ -10,15 +10,18 @@ namespace SnkFeatureKit.Patcher
         /// </summary>
         public interface ISnkDownloadTask : System.IDisposable
         {
+            SNK_DOWNLOAD_STATE State { get; }
+            string Name { get; set; }
+
             /// <summary>
             /// 下载地址
             /// </summary>
-            string URL { get; }
+            string Url { get;set; }
 
             /// <summary>
             /// 保存地址
             /// </summary>
-            string SavePath { get; }
+            string SavePath { get; set;}
 
             /// <summary>
             /// 文件总大小
@@ -33,19 +36,9 @@ namespace SnkFeatureKit.Patcher
             long DownloadedSize { get; }
 
             /// <summary>
-            /// 是否完成
+            /// 异常
             /// </summary>
-            bool IsCompleted { get; }
-
-            /// <summary>
-            /// 是否断点续传
-            /// </summary>
-            bool Resume { get; }
-
-            /// <summary>
-            /// 下载状态
-            /// </summary>
-            //SNK_DOWNLOAD_STATUS Status { get; }
+            System.Exception DownloadException { get; }
 
             /// <summary>
             /// 下载文件
@@ -61,18 +54,16 @@ namespace SnkFeatureKit.Patcher
             /// <param name="buffSize">下载缓存大小（默认：1024 * 64）</param>
             /// <param name="resume">断点继传</param>
             /// <returns></returns>
-            Task DownloadFileAsync(int buffSize = 1024 * 64, bool resume = false, CancellationTokenSource cancellationTokenSource = null);
+            Task DownloadFileAsync(int buffSize = 1024 * 64, bool resume = false);
 
             /// <summary>
             /// 取消下载
             /// </summary>
-            void CancelDownload();
+            void Cancel();
 
-            /// <summary>
-            /// 下载结果
-            /// </summary>
-            SnkHttpDownloadResult DownloadResult { get; }
-
+            void Pause();
+            
+            void Resume(); 
         }
     }
 }

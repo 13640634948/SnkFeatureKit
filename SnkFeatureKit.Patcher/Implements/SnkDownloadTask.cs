@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
-
-using SnkFeatureKit.Patcher.Extension;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
@@ -13,61 +10,53 @@ namespace SnkFeatureKit.Patcher
     {
         public class SnkDownloadTask : ISnkDownloadTask
         {
-            public string URL { get; private set; } = string.Empty;
-
-            public string SavePath { get; private set; } = string.Empty;
-
-            public long TotalSize { get; private set; } = 0L;
-
-            public long DownloadedSize { get; private set; } = 0L;
-
-            public bool Resume { get; private set; } = false;
-
-            //public SNK_DOWNLOAD_STATUS Status { get; private set; } = SNK_DOWNLOAD_STATUS.none;
-
-            public SnkHttpDownloadResult DownloadResult { get; private set; } = null;
-
-            public bool IsCompleted { get; private set; } = false;
-
-            private CancellationTokenSource _cancellationTokenSource = null;
-
-            //private SNK_DOWNLOAD_STATUS _status = SNK_DOWNLOAD_STATUS.none;
-
+            public SNK_DOWNLOAD_STATE State { get; private set; } = SNK_DOWNLOAD_STATE.none;
+            public string Name { get; set; }
+            public string Url { get; set; }
+            public string SavePath { get; set; }
+            public long TotalSize { get; private set; }
+            public long DownloadedSize { get; private set; }
+            public Exception DownloadException { get; private set; }
+            
             private bool _disposed = false;
 
-            public SnkDownloadTask(string url, string savePath)
+            public void Cancel()
             {
-                this.URL = url.FixSlash();
-                this.SavePath = savePath.FixSlash().FixLongPath();
+                if (State == SNK_DOWNLOAD_STATE.downloading)
+                    State = SNK_DOWNLOAD_STATE.canceling;
+            }     
+            
+            public void Pause()
+            {
+                if (State == SNK_DOWNLOAD_STATE.downloading)
+                    State = SNK_DOWNLOAD_STATE.pause;
             }
 
-            public void CancelDownload()
+            public void Resume()
             {
-                _cancellationTokenSource?.Cancel();
+                if (State == SNK_DOWNLOAD_STATE.pause)
+                    State = SNK_DOWNLOAD_STATE.downloading;
             }
 
             public void DownloadFile(int buffSize = 65536, bool resume = false)
             {
-                var code = SNK_HTTP_ERROR_CODE.succeed;
-                var httpCode = HttpStatusCode.OK;
-                Exception exception = null;
+                State = SNK_DOWNLOAD_STATE.downloading;
                 FileStream fileStream = null;
-
-                var fileInfo = new FileInfo(this.SavePath);
-                if (fileInfo.Exists)
-                {
-                    if (resume)
-                    {
-                        fileStream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite);
-                        fileStream.Seek(0, SeekOrigin.End);
-                    }
-                    else
-                        fileInfo.Delete();
-                }
-
                 try
                 {
-                    var request = WebRequest.CreateHttp(URL);
+                    var fileInfo = new FileInfo(this.SavePath);
+                    if (fileInfo.Exists)
+                    {
+                        if (resume)
+                        {
+                            fileStream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite);
+                            fileStream.Seek(0, SeekOrigin.End);
+                        }
+                        else
+                            fileInfo.Delete();
+                    }
+                    
+                    var request = WebRequest.CreateHttp(Url);
                     request.Method = "GET";
 
                     if (fileStream != null)
@@ -77,20 +66,31 @@ namespace SnkFeatureKit.Patcher
                     {
                         this.TotalSize = response.ContentLength;
                         var buffer = new byte[buffSize];
-                        var len = 0;
                         using (var responseStream = response.GetResponseStream())
                         {
+                            if(fileInfo.Directory?.Exists == false)
+                                fileInfo.Directory.Create();
+
                             using (fileStream = fileStream ?? fileInfo.Open(FileMode.Create, FileAccess.ReadWrite))
                             {
-                                while ((len = responseStream.Read(buffer, 0, buffSize)) > 0)
+                                var len = 0;
+                                while (this.State != SNK_DOWNLOAD_STATE.canceling)
                                 {
-                                    if (_cancellationTokenSource != null && _cancellationTokenSource.Token.IsCancellationRequested)
+                                    if(this.State == SNK_DOWNLOAD_STATE.pause)
+                                        continue;
+                                    
+                                    if (responseStream == null)
+                                        throw new ArgumentNullException($"responseStream is null. url:{Url}");
+
+                                    if ((len = responseStream.Read(buffer, 0, buffSize)) > 0)
                                     {
-                                        code = SNK_HTTP_ERROR_CODE.user_cancel;
+                                        fileStream.Write(buffer, 0, len);
+                                        this.DownloadedSize += len;
+                                    }
+                                    else
+                                    {
                                         break;
                                     }
-                                    fileStream.Write(buffer, 0, len);
-                                    this.DownloadedSize += len;
                                 }
                                 fileStream.Flush();
                                 fileStream.Close();
@@ -100,36 +100,16 @@ namespace SnkFeatureKit.Patcher
                 }
                 catch (System.Exception e)
                 {
-                    code = SNK_HTTP_ERROR_CODE.download_error;
-                    exception = new Exception($"下载出现异常\n下载地址:{URL}\n错误信息:{e.Message}\n堆栈:{e.StackTrace}", e);
+                    DownloadException = e;
                 }
                 finally
                 {
-                    this.ReleaseCancellationTokenSource();
-                    DownloadResult = new SnkHttpDownloadResult(code, httpCode, exception);
-                    //_status = SNK_DOWNLOAD_STATUS.completed;
-                    IsCompleted = true;
+                    this.State = SNK_DOWNLOAD_STATE.completed;
                 }
             }
 
-            private void ReleaseCancellationTokenSource()
-            {
-                if (_cancellationTokenSource != null)
-                {
-                    _cancellationTokenSource.Cancel();
-                    _cancellationTokenSource.Dispose();
-                    _cancellationTokenSource = null;
-                }
-            }
-
-            public Task DownloadFileAsync(int buffSize = 1024 * 64, bool resume = false, CancellationTokenSource cancellationTokenSource = null)
-            {
-                if(cancellationTokenSource == null)
-                    return Task.Run(() => DownloadFile(buffSize, resume));
-                
-                _cancellationTokenSource = cancellationTokenSource;
-                return Task.Run(() => DownloadFile(buffSize, resume), _cancellationTokenSource.Token);
-            }
+            public Task DownloadFileAsync(int buffSize = 1024 * 64, bool resume = false)
+                => Task.Run(() => DownloadFile(buffSize, resume));
 
             ~SnkDownloadTask()
             {
@@ -150,14 +130,11 @@ namespace SnkFeatureKit.Patcher
                     {
                         _disposed = true;
 
-                        this.ReleaseCancellationTokenSource();
-                        URL = string.Empty;
+                        Url = string.Empty;
                         SavePath = string.Empty;
                         TotalSize = 0L;
                         DownloadedSize = 0L;
-                        Resume = false;
-                        IsCompleted = false;
-                        DownloadResult = null;
+                        State = SNK_DOWNLOAD_STATE.none;
                     }
                 }
             }

@@ -1,8 +1,8 @@
 ﻿namespace SnkFeatureKit.Patcher
 {
-    namespace Extension
+    namespace Extensions
     {
-        internal static class SnkExtension
+        internal static class StringExtension
         {
             public static string FixLongPath(this string content)
             {

@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SnkFeatureKit.Asynchronous")]
-[assembly: AssemblyDescription("Snk功能插件包")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ClaineLe")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SnkFeatureKit.Asynchronous")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5BB720EA-FA63-4725-8A00-EEF778F432CB")]
+[assembly: Guid("2DEA82C5-86A8-4EF4-B048-9D0125D2A166")]
 
 // Version information for an assembly consists of the following four values:
 //

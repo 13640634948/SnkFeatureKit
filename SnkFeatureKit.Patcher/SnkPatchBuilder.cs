@@ -9,6 +9,8 @@ namespace SnkFeatureKit.Patcher
 {
     public class SnkPatchBuilder
     {
+        private static readonly ISnkLogger logger = SnkLogHost.GetLogger<SnkPatchBuilder>();
+
         private readonly string _projPath;
         private readonly string _channelName;
         private readonly int _appVersion;
@@ -24,49 +26,60 @@ namespace SnkFeatureKit.Patcher
             this._jsonParser = jsonParser;
         }
 
-        private SnkVersionInfos LoadVersionInfos(string appVersionPath)
+        private List<SnkVersionMeta> LoadResVersionInfos(string resVersionPath)
         {
-            var fileInfo = new FileInfo(Path.Combine(appVersionPath, _settings.versionInfoFileName));
+            var fileInfo = new FileInfo(Path.Combine(resVersionPath, _settings.resVersionInfoFileName));
             if (fileInfo.Exists == false)
             {
-                var versionInfos = new SnkVersionInfos
-                {
-                    histories = new List<SnkVersionMeta>()
-                };
-                return versionInfos;
+                return new List<SnkVersionMeta>();
             }
 
             var jsonString = File.ReadAllText(fileInfo.FullName);
-            return _jsonParser.FromJson<SnkVersionInfos>(jsonString);
+            return _jsonParser.FromJson<List<SnkVersionMeta>>(jsonString);
+        }
+
+        private List<int> LoadAppVersionInfos(string appVersionPath)
+        {
+            var fileInfo = new FileInfo(Path.Combine(appVersionPath, _settings.appVersionInfoFileName));
+            if (fileInfo.Exists == false)
+                return new List<int>();
+
+            var jsonString = File.ReadAllText(fileInfo.FullName);
+            return _jsonParser.FromJson<List<int>>(jsonString);
         }
 
         public async Task<SnkVersionMeta> Build(List<ISnkFileFinder> finderList, System.Func<string, bool> overrideReadOnlyFile = null)
         {
             if (finderList == null || finderList.Count == 0)
             {
-                throw new System.Exception("filderList is null or len = 0");
+                throw new System.Exception("finderList is null or len = 0");
             }
-            SnkLogHost.Default?.Info(Path.GetFullPath(this._projPath));
 
-            var appVersionPath = Path.Combine(this._projPath, this._channelName, _appVersion.ToString());
+            if(logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                logger.LogInfo(Path.GetFullPath(this._projPath));
+
+            var channelPath = Path.Combine(this._projPath, this._channelName);
+            
+            var appVersionPath = Path.Combine(channelPath, _appVersion.ToString());
             if (Directory.Exists(appVersionPath) == false)
                 Directory.CreateDirectory(appVersionPath);
 
             var lastSourceInfoList = new List<SnkSourceInfo>();
             ushort resVersion = 1;
 
-            var versionInfos = LoadVersionInfos(appVersionPath);
+            var appVersionList = LoadAppVersionInfos(appVersionPath);
+            var resVersionList = LoadResVersionInfos(appVersionPath);
 
-            var isHotUpdatePackage = versionInfos.histories.Count > 0;
+            var isHotUpdatePackage = resVersionList.Count > 0;
             if (isHotUpdatePackage)
             {
-                var lastResVersion = versionInfos.histories.Last().version;
+                var lastResVersion = resVersionList.Last().version;
                 resVersion = (ushort)(lastResVersion + 1);
 
                 //加载最新的资源列表
                 var lastResManifestPath = Path.Combine(appVersionPath, lastResVersion.ToString(), _settings.manifestFileName);
                 var fileInfo = new FileInfo(lastResManifestPath);
-                if (fileInfo.Exists == true)
+                if (fileInfo.Exists)
                 {
                     var jsonString = await Task.Run(() => File.ReadAllText(fileInfo.FullName));
                     var list = _jsonParser.FromJson<List<SnkSourceInfo>>(jsonString);
@@ -130,15 +143,19 @@ namespace SnkFeatureKit.Patcher
                 version = resVersion,
                 size = addList.Sum(a => a.size),
                 count = addList.Count,
-                code = SnkPatch.codeGenerator.CalculateFileMD5(manifestPath)
+                code = SnkPatch.S_CodeGenerator.CalculateFileMD5(manifestPath)
             };
-            versionInfos.histories.Add(versionMeta);
-            versionInfos.appVersion = _appVersion;
+            resVersionList.Add(versionMeta);
 
             //保存版本信息
-            var versionInfosPath = Path.Combine(appVersionPath, this._settings.versionInfoFileName);
-            await Task.Run(() => File.WriteAllText(versionInfosPath, _jsonParser.ToJson(versionInfos)));
+            var resVersionInfosPath = Path.Combine(appVersionPath, this._settings.resVersionInfoFileName);
+            await Task.Run(() => File.WriteAllText(resVersionInfosPath, _jsonParser.ToJson(resVersionList)));
 
+            if (appVersionList.Exists(a=> a == _appVersion) == false)
+                appVersionList.Add(_appVersion);
+
+            var appVersionInfosPath = Path.Combine(channelPath, this._settings.appVersionInfoFileName);
+            await Task.Run(() => File.WriteAllText(appVersionInfosPath, _jsonParser.ToJson(appVersionList)));
             return versionMeta;
         }
     }
