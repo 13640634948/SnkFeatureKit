@@ -14,13 +14,6 @@ namespace SnkFeatureKit.Patcher
             /// </summary>
             /// <param name="resVersion">资源版本</param>
             void UpdateLocalResVersion(ushort resVersion);
-
-            /// <summary>
-            /// 更新本地仓库缓存列表
-            /// </summary>
-            /// <param name="sourceInfo"></param>
-            /// <param name="add"></param>
-            void UpdateLocalSourceInfo(SnkSourceInfo sourceInfo, bool add = true);
         }
     }
 }

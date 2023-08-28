@@ -12,6 +12,6 @@ namespace SnkFeatureKit.Patcher
             /// <summary>
             /// 历史版本
             /// </summary>
-            public List<SnkSourceInfo> localSourceInfoList;
+            //public List<SnkSourceInfo> localSourceInfoList;
     }
 }

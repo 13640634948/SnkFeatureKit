@@ -147,14 +147,48 @@ namespace SnkFeatureKit.Patcher
 
                     if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
                     {
-                        var initializeLog = new StringBuilder();
-                        foreach (var a in _resVersionList)
+                        if (_resVersionList.Count == 0)
                         {
-                            initializeLog.AppendLine($"[RemoteInit]AppVersion:{a.version}|{a.size}|{a.count}|{a.code}");
+                            logger.LogInfo("RemoteRepoVersion.Initialize-ResVersion:_resVersionList.Count:0");
                         }
-                        initializeLog.AppendLine($"[RemoteInit]Version:{Version}");
-                        logger.LogInfo(initializeLog.ToString());
+                        else
+                        {
+                            logger.LogInfo("RemoteRepoVersion.Initialize-ResVersion:Start");
+                            foreach (var t in _resVersionList)
+                                logger.LogInfo(t.ToString());
+                            logger.LogInfo("RemoteRepoVersion.Initialize-ResVersion:End");
+                        }
                     }
+                    
+                    var basicURL = GetCurrURL();
+                    var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), Version.ToString(), _patchCtrl.Settings.manifestFileName);
+                    try
+                    {
+                        var content = await SnkHttpWeb.GetAsync(url);
+                        this._sourceInfoList = _jsonParser.FromJson<List<SnkSourceInfo>>(content);
+                        
+                        if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                        {
+                            if (_sourceInfoList.Count == 0)
+                            {
+                                logger.LogInfo("RemoteRepoVersion.Initialize-SourceInfoList.Count:0");
+                            }
+                            else
+                            {
+                                logger.LogInfo("RemoteRepoVersion.Initialize-SourceInfoList:Start");
+                                foreach (var t in _sourceInfoList)
+                                    logger.LogInfo(t.ToString());
+                                logger.LogInfo("RemoteRepoVersion.Initialize-SourceInfoList:End");
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        IsError = true;
+                        ExceptionString = "获取远端资源列表失败";
+                        throw new AggregateException("获取远端资源列表失败。URL:" + url + "\nerrText:" + e.Message + "\n" + e.StackTrace);
+                    }
+                    
                 }
                 catch (Exception exception)
                 {
@@ -195,23 +229,8 @@ namespace SnkFeatureKit.Patcher
             public void SetThreadTickIntervalMilliseconds(int intervalMilliseconds)
                 => this._threadTickInterval = intervalMilliseconds;
 
-            public async Task<List<SnkSourceInfo>> GetSourceInfoList(ushort version)
-            {
-                var basicURL = GetCurrURL();
-                var url = Path.Combine(basicURL, _patchCtrl.ChannelName, _patchCtrl.AppVersion.ToString(), version.ToString(), _patchCtrl.Settings.manifestFileName);
-                try
-                {
-                    var content = await SnkHttpWeb.GetAsync(url);
-                    this._sourceInfoList = _jsonParser.FromJson<List<SnkSourceInfo>>(content);
-                    return this._sourceInfoList;
-                }
-                catch (Exception e)
-                {
-                    IsError = true;
-                    ExceptionString = "获取远端资源列表失败";
-                    throw new AggregateException("获取远端资源列表失败。URL:" + url + "\nerrText:" + e.Message + "\n" + e.StackTrace);
-                }
-            }
+            public   Task<List<SnkSourceInfo>> GetSourceInfoList(ushort version)
+                => Task.FromResult(_sourceInfoList);
 
             public void EnqueueDownloadQueue(string dirPath, string key, int resVersion)
             {

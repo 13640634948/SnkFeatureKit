@@ -188,11 +188,6 @@ namespace SnkFeatureKit.Patcher
 
             public void OnPreDownloadTask(string key)
             {
-                var index = _addList.FindIndex(a => a.key == key);
-                if (index >= 0)
-                {
-                    _localRepo.UpdateLocalSourceInfo(_addList[index]);
-                }
             }
 
             public async Task<Tuple<List<SnkSourceInfo>, List<string>>> PreviewDiff(ushort remoteResVersion)
@@ -203,7 +198,17 @@ namespace SnkFeatureKit.Patcher
                     remoteResVersion = this._remoteRepo.Version;
                 var remoteManifest = await _remoteRepo.GetSourceInfoList(remoteResVersion);
 
-                return SnkPatch.CompareToDiff(localManifest, remoteManifest);
+                var tuple = SnkPatch.CompareToDiff(localManifest, remoteManifest);
+
+                if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
+                {
+                    logger.LogInfo($"localManifest:{localManifest.Count}");
+                    logger.LogInfo($"remoteManifest:{remoteManifest.Count}");
+                    logger.LogInfo($"addManifest:{tuple.Item1.Count}");
+                    logger.LogInfo($"delManifest:{tuple.Item2.Count}");
+                }
+
+                return tuple;
             }
 
             public bool LocalRepoExists(string key) => this._localRepo.Exists(key);

@@ -50,7 +50,6 @@
         <Compile Include="Extensions\StringExtension.cs" />
         <Compile Include="Implements\SnkDownloadTask.cs" />
         <Compile Include="Implements\SnkFileFinder.cs" />
-        <Compile Include="Implements\SnkFullCheckLocalPatchRepository.cs" />
         <Compile Include="Implements\SnkLocalPatchRepository.cs" />
         <Compile Include="Implements\SnkMD5Generator.cs" />
         <Compile Include="Implements\SnkPatchController.cs" />
