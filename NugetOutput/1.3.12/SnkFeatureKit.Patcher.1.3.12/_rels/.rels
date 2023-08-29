@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Type="http://schemas.microsoft.com/packaging/2010/07/manifest" Target="/SnkFeatureKit.Patcher.nuspec" Id="R48BC9C2061F0CFA3" />
-  <Relationship Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="/package/services/metadata/core-properties/2b9a51282e98414e92727cc542ca92c8.psmdcp" Id="RC5F5B94635A399A9" />
-</Relationships>

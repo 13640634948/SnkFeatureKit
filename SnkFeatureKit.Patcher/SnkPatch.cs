@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using SnkFeatureKit.Logging;
 using SnkFeatureKit.Patcher.Extensions;
 using SnkFeatureKit.Patcher.Interfaces;
 using SnkFeatureKit.Patcher.Implements;
-using SnkFeatureKit.Logging;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -17,17 +16,12 @@ namespace SnkFeatureKit.Patcher
         public static ISnkCodeGenerator S_CodeGenerator = new SnkMD5Generator();
 
         public static SnkPatchBuilder CreatePatchBuilder(ISnkJsonParser jsonParser, string projPath, string channelName, int appVersion, SnkPatchSettings settings = null)
-        {
-            var builder = new SnkPatchBuilder(projPath, channelName, appVersion, settings ?? new SnkPatchSettings(), jsonParser);
-            return builder;
-        }
+            => new SnkPatchBuilder(projPath, channelName, appVersion, settings ?? new SnkPatchSettings(), jsonParser);
 
         public static ISnkPatchController CreatePatchExecutor<TLocalRepo, TRemoteRepo>(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
             where TLocalRepo : class, ISnkLocalPatchRepository, new()
             where TRemoteRepo : class, ISnkRemotePatchRepository, new()
-        {
-            return new SnkPatchController<TLocalRepo, TRemoteRepo>(settings, threadNumber, jsonParser);
-        }
+        => new SnkPatchController<TLocalRepo, TRemoteRepo>(settings, threadNumber, jsonParser);
 
         public static ISnkPatchController CreatePatchExecutor<TDownloadTask>(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
             where TDownloadTask : class, ISnkDownloadTask, new()

@@ -4,7 +4,7 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{D7FF5721-C211-4824-A6BC-75F6E4C6FB45}</ProjectGuid>
+        <ProjectGuid>{4B7F62CE-BB42-407A-A5F8-BAB5058A2718}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>SnkFeatureKit.Logging</RootNamespace>
@@ -33,11 +33,9 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="mscorlib" />
         <Reference Include="System" />
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
-        <Reference Include="System.Numerics" />
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>

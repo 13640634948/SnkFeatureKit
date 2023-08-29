@@ -24,5 +24,8 @@
         /// 源文件验证值
         /// </summary>
         public string code;
+
+        public override string ToString()
+            => $"key:{key}, ver:{version}, size:{size}, code:{code}";
     }
 }    

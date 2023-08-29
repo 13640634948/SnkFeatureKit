@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
-using System.IO;
-
 using SnkFeatureKit.Patcher.Interfaces;
 using SnkFeatureKit.Logging;
 
@@ -26,79 +25,60 @@ namespace SnkFeatureKit.Patcher
 
             protected SnkLocalSourceInfos _localSourceInfos;
 
-            protected virtual List<SnkSourceInfo> sourceInfoList => _localSourceInfos.localSourceInfoList;
+            protected virtual List<SnkSourceInfo> sourceInfoList { get; set; }
 
             private bool _disposed = false;
 
-            protected string _localVersionFullName;
             protected ISnkJsonParser _jsonParser;
 
-            public virtual Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
+            protected virtual string resVersionFilePath { get; } = "res_version.json";
+
+            protected void LoadLocalSourceInfos()
+            {
+                SnkLocalSourceInfos localSourceInfos = null;
+                if (System.IO.File.Exists(resVersionFilePath))
+                {
+                    var json = System.IO.File.ReadAllText(resVersionFilePath);
+                    localSourceInfos = _jsonParser.FromJson<SnkLocalSourceInfos>(json);
+                }
+                _localSourceInfos = localSourceInfos ?? new SnkLocalSourceInfos();
+            }
+ 
+            public virtual async Task<bool> Initialize(ISnkPatchController patchController, ISnkJsonParser jsonParser)
             {
                 this._patchCtrl = patchController;
                 this._jsonParser = jsonParser;
 
-                _localVersionFullName = Path.Combine(this.LocalPath, this._patchCtrl.Settings.localVersionDir, this._patchCtrl.Settings.resVersionInfoFileName);
-                var fileInfo = new FileInfo(_localVersionFullName);
-                if (fileInfo.Exists == false)
+                LoadLocalSourceInfos();
+                
+                var finder = new SnkFileFinder(this.LocalPath);
+                sourceInfoList = await SnkPatch.GenerateSourceInfoList(0, finder) ?? new List<SnkSourceInfo>();
+
+                if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
                 {
-                    var versionInfos = new SnkLocalSourceInfos();
-                    versionInfos.resVersion = 0;
-                    versionInfos.localSourceInfoList = new List<SnkSourceInfo>();
-                    this._localSourceInfos = versionInfos;
+                    if (sourceInfoList.Count == 0)
+                    {
+                        logger.LogInfo("LocalRepoVersion.Initialize:sourceInfoList.Count:0");
+                    }
+                    else
+                    {
+                        logger.LogInfo("LocalRepoVersion.Initialize:Start");
+                        foreach (var t in sourceInfoList)
+                            logger.LogInfo(t.ToString());
+                        logger.LogInfo("LocalRepoVersion.Initialize:End");
+                    }
                 }
-                else
-                {
-                    string text = File.ReadAllText(fileInfo.FullName).Trim();
-                    this._localSourceInfos = _jsonParser.FromJson<SnkLocalSourceInfos>(text);
-                }
-                return Task.FromResult(true);
+            
+                return true;
             }
 
             public virtual Task<List<SnkSourceInfo>> GetSourceInfoList(ushort version = 0)
-            {
-                if(logger != null && logger.IsEnabled(SnkLogLevel.Info))
-                    logger.LogInfo($"[RemoteRepo]GetSourceInfoList.fromVersion:{version}");
-
-                return Task.FromResult(sourceInfoList);
-            }
-
-            public virtual void UpdateLocalSourceInfo(SnkSourceInfo sourceInfo, bool add = true)
-            {
-                if (this.sourceInfoList == null)
-                {
-                    throw new System.NullReferenceException("sourceInfoList is null");
-                }
-
-                var index = this.sourceInfoList.FindIndex(a => a.key == sourceInfo.key);
-
-                if (add && index < 0)
-                {
-                    this.sourceInfoList.Add(sourceInfo);
-                }
-                else if (add == false && index >= 0)
-                {
-                    this.sourceInfoList.RemoveAt(index);
-                }
-                SaveSourceInfo();
-            }
+                => Task.FromResult(sourceInfoList);
 
             public virtual void UpdateLocalResVersion(ushort resVersion)
             {
                 this._localSourceInfos.resVersion = resVersion;
-                SaveSourceInfo();
-            }
-
-            protected virtual void SaveSourceInfo()
-            {
-                var fileInfo = new FileInfo(_localVersionFullName);
-                if (fileInfo.Exists)
-                    fileInfo.Delete();
-
-                if (fileInfo.Directory.Exists == false)
-                    fileInfo.Directory.Create();
-                var json = _jsonParser.ToJson(this._localSourceInfos);
-                File.WriteAllText(fileInfo.FullName, json);
+                System.IO.File.WriteAllText("res_version.json", _jsonParser.ToJson(this._localSourceInfos));
             }
 
             public bool Exists(string key)
