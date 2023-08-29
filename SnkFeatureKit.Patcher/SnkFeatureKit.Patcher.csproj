@@ -42,6 +42,7 @@
         <Compile Include="Exceptions\SnkAppVersionException.cs" />
         <Compile Include="Exceptions\SnkException.cs" />
         <Compile Include="Extensions\StringExtension.cs" />
+        <Compile Include="Implements\SnkCompressor.cs" />
         <Compile Include="Implements\SnkDownloadTask.cs" />
         <Compile Include="Implements\SnkFileFinder.cs" />
         <Compile Include="Implements\SnkLocalPatchRepository.cs" />
@@ -49,6 +50,7 @@
         <Compile Include="Implements\SnkPatchController.cs" />
         <Compile Include="Implements\SnkRemotePatchRepository.cs" />
         <Compile Include="Interfaces\ISnkCodeGenerator.cs" />
+        <Compile Include="Interfaces\ISnkCompressor.cs" />
         <Compile Include="Interfaces\ISnkDownloadTask.cs" />
         <Compile Include="Interfaces\ISnkFileFinder.cs" />
         <Compile Include="Interfaces\ISnkJsonParser.cs" />

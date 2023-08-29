@@ -15,8 +15,8 @@ namespace SnkFeatureKit.Patcher
     {
         public static ISnkCodeGenerator S_CodeGenerator = new SnkMD5Generator();
 
-        public static SnkPatchBuilder CreatePatchBuilder(ISnkJsonParser jsonParser, string projPath, string channelName, int appVersion, SnkPatchSettings settings = null)
-            => new SnkPatchBuilder(projPath, channelName, appVersion, settings ?? new SnkPatchSettings(), jsonParser);
+        public static SnkPatchBuilder CreatePatchBuilder(ISnkJsonParser jsonParser, string projPath, string channelName, int appVersion, SnkPatchSettings settings = null, ISnkCompressor compressor = null)
+            => new SnkPatchBuilder(projPath, channelName, appVersion, settings ?? new SnkPatchSettings(), jsonParser, compressor);
 
         public static ISnkPatchController CreatePatchExecutor<TLocalRepo, TRemoteRepo>(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
             where TLocalRepo : class, ISnkLocalPatchRepository, new()
