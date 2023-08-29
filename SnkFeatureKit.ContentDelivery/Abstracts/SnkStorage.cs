@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Runtime.CompilerServices;
 using SnkFeatureKit.ContentDelivery.Interfaces;
+using SnkFeatureKit.Logging;
 
 namespace SnkFeatureKit.ContentDelivery
 {
