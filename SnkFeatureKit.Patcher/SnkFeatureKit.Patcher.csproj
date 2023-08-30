@@ -39,15 +39,17 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Abstracts\SnkPatchControllerAbstract.cs" />
         <Compile Include="Exceptions\SnkAppVersionException.cs" />
         <Compile Include="Exceptions\SnkException.cs" />
         <Compile Include="Extensions\StringExtension.cs" />
         <Compile Include="Implements\SnkCompressor.cs" />
+        <Compile Include="Implements\SnkCompressPatchController.cs" />
         <Compile Include="Implements\SnkDownloadTask.cs" />
         <Compile Include="Implements\SnkFileFinder.cs" />
         <Compile Include="Implements\SnkLocalPatchRepository.cs" />
         <Compile Include="Implements\SnkMD5Generator.cs" />
-        <Compile Include="Implements\SnkPatchController.cs" />
+        <Compile Include="Implements\SnkSourcePatchController.cs" />
         <Compile Include="Implements\SnkRemotePatchRepository.cs" />
         <Compile Include="Interfaces\ISnkCodeGenerator.cs" />
         <Compile Include="Interfaces\ISnkCompressor.cs" />
@@ -68,6 +70,7 @@
         <Compile Include="SnkSourceInfo.cs" />
         <Compile Include="SnkVersionMeta.cs" />
         <Compile Include="SNK_DOWNLOAD_STATE.cs" />
+        <Compile Include="SNK_PATCH_CTRL_STATE.cs" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj">

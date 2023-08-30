@@ -23,7 +23,7 @@ namespace SnkFeatureKit.Patcher
             this._projPath = projPath;
             this._channelName = channelName;
             this._appVersion = appVersion;
-            this._settings = settings;
+            this._settings = settings ?? new SnkPatchSettings();
             this._jsonParser = jsonParser;
             this._compressor = compressor;
         }

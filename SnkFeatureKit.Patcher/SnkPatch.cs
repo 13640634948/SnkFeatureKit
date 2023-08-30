@@ -15,18 +15,6 @@ namespace SnkFeatureKit.Patcher
     {
         public static ISnkCodeGenerator S_CodeGenerator = new SnkMD5Generator();
 
-        public static SnkPatchBuilder CreatePatchBuilder(ISnkJsonParser jsonParser, string projPath, string channelName, int appVersion, SnkPatchSettings settings = null, ISnkCompressor compressor = null)
-            => new SnkPatchBuilder(projPath, channelName, appVersion, settings ?? new SnkPatchSettings(), jsonParser, compressor);
-
-        public static ISnkPatchController CreatePatchExecutor<TLocalRepo, TRemoteRepo>(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
-            where TLocalRepo : class, ISnkLocalPatchRepository, new()
-            where TRemoteRepo : class, ISnkRemotePatchRepository, new()
-        => new SnkPatchController<TLocalRepo, TRemoteRepo>(settings, threadNumber, jsonParser);
-
-        public static ISnkPatchController CreatePatchExecutor<TDownloadTask>(SnkPatchControlSettings settings, int threadNumber, ISnkJsonParser jsonParser)
-            where TDownloadTask : class, ISnkDownloadTask, new()
-            => CreatePatchExecutor<SnkLocalPatchRepository, SnkRemotePatchRepository<TDownloadTask>>(settings, threadNumber, jsonParser);
-
         public static async Task<List<SnkSourceInfo>> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, Dictionary<string,string> keyPathMapping = null)
         {
             if (fileFinder.TrySurvey(out var fileInfos) == false)
