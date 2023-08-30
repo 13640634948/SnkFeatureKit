@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SnkFeatureKit.Logging;
+using SnkFeatureKit.Patcher.Abstracts;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
@@ -26,12 +27,12 @@ namespace SnkFeatureKit.Patcher
                 this.remoteRepo.SetDownloadThreadNumber(threadNumber);
             }
             
-            public override async Task<long> TryUpdate()
+            public override long TryUpdate()
             {
-                await ValidityInitialization();
+                ValidityInitialization();
 
                 status = SNK_PATCH_CTRL_STATE.preview_diff_begin;
-                var tuple = await PreviewDiff(this.RemoteResVersion);
+                var tuple = PreviewDiff(this.RemoteResVersion);
                 _addList = tuple.Item1;
                 _delList = tuple.Item2;
                 status = SNK_PATCH_CTRL_STATE.preview_diff_end;
@@ -50,7 +51,7 @@ namespace SnkFeatureKit.Patcher
 
             public override async Task Apply(System.Func<Task<bool>> onExceptionCallBack)
             {
-                await ValidityInitialization();
+                ValidityInitialization();
 
                 status = SNK_PATCH_CTRL_STATE.downloading;
 
@@ -92,9 +93,9 @@ namespace SnkFeatureKit.Patcher
                 }
 
                 if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
-                    logger?.LogInfo($"UpdateLocalResVersion:{remoteRepo.Version}");
+                    logger?.LogInfo($"UpdateLocalResVersion:{remoteRepo.ResVersion}");
 
-                localRepo.UpdateLocalResVersion(remoteRepo.Version);
+                localRepo.UpdateLocalResVersion(remoteRepo.ResVersion);
 
                 status = SNK_PATCH_CTRL_STATE.downloaded;
             }
@@ -103,10 +104,10 @@ namespace SnkFeatureKit.Patcher
             {
             }
 
-            protected async Task<Tuple<List<SnkSourceInfo>, List<string>>> PreviewDiff(ushort remoteResVersion)
+            protected Tuple<List<SnkSourceInfo>, List<string>> PreviewDiff(ushort remoteResVersion)
             {
-                var localManifest = await localRepo.GetSourceInfoList(0) ?? new List<SnkSourceInfo>();
-                var remoteManifest = await remoteRepo.GetSourceInfoList(remoteResVersion);
+                var localManifest = localRepo.GetSourceInfoList(0) ?? new List<SnkSourceInfo>();
+                var remoteManifest = remoteRepo.GetSourceInfoList(remoteResVersion);
                 var tuple = SnkPatch.CompareToDiff(localManifest, remoteManifest);
                 if (logger != null && logger.IsEnabled(SnkLogLevel.Info))
                 {

@@ -97,9 +97,11 @@ namespace SnkFeatureKit.Patcher
             var keyPathMapping = new Dictionary<string, string>();
             var currSourceInfoList = new List<SnkSourceInfo>();
 
+            var count = 0;
+            var currNum = 0;
             foreach (var finder in finderList)
             {
-                var list = await SnkPatch.GenerateSourceInfoList(resVersion, finder, keyPathMapping);
+                var list = await Task.Run(()=> SnkPatch.GenerateSourceInfoList(resVersion, finder, ref count ,ref currNum, keyPathMapping));
                 if (list != null && list.Count > 0)
                     currSourceInfoList.AddRange(list);
             }

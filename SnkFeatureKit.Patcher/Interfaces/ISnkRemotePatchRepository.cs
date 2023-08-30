@@ -7,15 +7,12 @@ namespace SnkFeatureKit.Patcher
     {
         public interface ISnkRemotePatchRepository : ISnkPatchRepository
         {
-            /// <summary>
-            /// 资源版本历史
-            /// </summary>
-            /// <returns></returns>
             List<SnkVersionMeta> GetResVersionHistories();
+
+            List<int> GetAppVersionHistories();
 
             void EnqueueDownloadQueue(string dirPath, string key, int resVersion);
 
-            //Task<bool> StartupDownload();
             Task<bool> StartupDownload(System.Action<string> onPreDownloadTask);
 
             void SetDownloadThreadNumber(int threadNum);

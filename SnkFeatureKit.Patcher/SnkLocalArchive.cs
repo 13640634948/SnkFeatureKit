@@ -3,8 +3,9 @@
 namespace SnkFeatureKit.Patcher
 {
     [Serializable]
-    public class SnkLocalSourceInfos
+    public class SnkLocalArchive
     {
         public ushort resVersion;
+        public string verificationCode;
     }
 }

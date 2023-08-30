@@ -15,7 +15,7 @@ namespace SnkFeatureKit.Patcher
     {
         public static ISnkCodeGenerator S_CodeGenerator = new SnkMD5Generator();
 
-        public static async Task<List<SnkSourceInfo>> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, Dictionary<string,string> keyPathMapping = null)
+        public static List<SnkSourceInfo> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, ref int Count, ref int CurrNum, Dictionary<string,string> keyPathMapping = null)
         {
             if (fileFinder.TrySurvey(out var fileInfos) == false)
             {
@@ -24,65 +24,43 @@ namespace SnkFeatureKit.Patcher
                 return null;
             }
 
-            var sourceInfoBag = new ConcurrentBag<SnkSourceInfo>();
-            var fileInfoBag = new ConcurrentBag<FileInfo>(fileInfos);
-            var mappingBag = new ConcurrentBag<Tuple<string, string>>();
-
+            var sourceInfoList = new List<SnkSourceInfo>();
+            var mapping = new Dictionary<string, string>();
             var dirInfo = new DirectoryInfo(fileFinder.SourceDirPath);
-            var taskList = new List<Task>();
-            var fileInfoCount = fileInfoBag.Count;
-            const int threadNumber = 12;
-
-            await Task.Run(() => 
+            Count = fileInfos.Length;
+            CurrNum = 0;
+            foreach (var fileInfo in fileInfos)
             {
-                while (sourceInfoBag.Count < fileInfoCount)
+                var info = new SnkSourceInfo();
+
+                if (fileFinder.SearchOption == SearchOption.AllDirectories)
                 {
-                    for (int i = 0; i < taskList.Count; i++) 
+                    info.key = fileInfo.FullName.Replace(dirInfo.FullName, dirInfo.Name).FixSlash();
+                }
+                else
+                {
+                    info.key = fileInfo.FullName.Replace(dirInfo.FullName, string.Empty).FixSlash();
+                    if (info.key.StartsWith("/"))
                     {
-                        if (taskList[i].IsCompleted)
-                            taskList.RemoveAt(i--);
-                    }
-
-                    if (taskList.Count < threadNumber && fileInfoBag.Count > 0)
-                    {
-                        if (fileInfoBag.TryTake(out var fileInfo) == false)
-                            continue;
-
-                        var task = Task.Run(() => 
-                        {
-                            var info = new SnkSourceInfo();
-
-                            if (fileFinder.SearchOption == SearchOption.AllDirectories)
-                            {
-                                info.key = fileInfo.FullName.Replace(dirInfo.FullName, dirInfo.Name).FixSlash();
-                            }
-                            else
-                            {
-                                info.key = fileInfo.FullName.Replace(dirInfo.FullName, string.Empty).FixSlash();
-                                if (info.key.StartsWith("/"))
-                                {
-                                    //info.key = info.key[1..];
-                                    info.key = info.key.Substring(1);
-                                }
-                            }
-
-                            info.version = resVersion;
-                            info.size = fileInfo.Length;
-                            info.code = S_CodeGenerator.CalculateFileMD5(fileInfo.FullName);
-
-                            sourceInfoBag.Add(info);
-                            mappingBag.Add(new Tuple<string, string>(info.key, fileInfo.FullName));
-                        });
-                        taskList.Add(task);
+                        info.key = info.key.Substring(1);
                     }
                 }
-            });
 
-            if(keyPathMapping != null)
-                foreach (var entity in mappingBag)
-                    keyPathMapping.Add(entity.Item1, entity.Item2);
+                info.version = resVersion;
+                info.size = fileInfo.Length;
+                info.code = S_CodeGenerator.CalculateFileMD5(fileInfo.FullName);
+                sourceInfoList.Add(info);
+                mapping[info.key] = fileInfo.FullName;
+                CurrNum++;
+            }
 
-            return sourceInfoBag.ToList();
+            if (keyPathMapping != null)
+            {
+                foreach (var entity in mapping)
+                    keyPathMapping.Add(entity.Key, entity.Value);
+            }
+
+            return sourceInfoList;
         }
 
         public static void CopySourceTo(string toDirectoryFullPath, List<SnkSourceInfo> sourceInfoList, Dictionary<string,string> keyPathMapping)
