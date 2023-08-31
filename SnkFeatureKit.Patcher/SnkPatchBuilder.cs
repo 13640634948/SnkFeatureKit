@@ -176,14 +176,11 @@ namespace SnkFeatureKit.Patcher
             {
                 var zipFileInfo = new System.IO.FileInfo(Path.Combine(appVersionPath, $"patcher_{resVersion}.zip"));
                 await _compressor.Compress(projResPath, zipFileInfo.FullName);
-                if (clearSourceDir)
-                {
-                    Directory.Delete(projResPath, true);
-                }
-
                 versionMeta.size = zipFileInfo.Length;
-                versionMeta.count = zipFileInfo.Directory.GetFiles("*", SearchOption.TopDirectoryOnly).Length;
+                versionMeta.count = System.IO.Directory.GetFiles(projResPath, "*", SearchOption.TopDirectoryOnly).Length;
                 versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(zipFileInfo.FullName);
+                if (clearSourceDir)
+                    Directory.Delete(projResPath, true);
             }
             else
             {
