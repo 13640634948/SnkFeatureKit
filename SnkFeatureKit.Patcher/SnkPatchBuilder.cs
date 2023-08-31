@@ -71,7 +71,7 @@ namespace SnkFeatureKit.Patcher
             ushort resVersion = 1;
             ushort lastResVersion = 0;
 
-            var appVersionList = LoadAppVersionInfos(appVersionPath);
+            var appVersionList = LoadAppVersionInfos(channelPath);
             var resVersionList = LoadResVersionInfos(appVersionPath);
 
             var isHotUpdatePackage = resVersionList.Count > 0;
