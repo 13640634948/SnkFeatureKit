@@ -69,6 +69,7 @@ namespace SnkFeatureKit.Patcher
 
             var lastSourceInfoList = new List<SnkSourceInfo>();
             ushort resVersion = 1;
+            ushort lastResVersion = 0;
 
             var appVersionList = LoadAppVersionInfos(appVersionPath);
             var resVersionList = LoadResVersionInfos(appVersionPath);
@@ -76,7 +77,7 @@ namespace SnkFeatureKit.Patcher
             var isHotUpdatePackage = resVersionList.Count > 0;
             if (isHotUpdatePackage)
             {
-                var lastResVersion = resVersionList.Last().version;
+                lastResVersion = resVersionList.Last().version;
                 resVersion = (ushort)(lastResVersion + 1);
 
                 //加载最新的资源列表
@@ -167,7 +168,8 @@ namespace SnkFeatureKit.Patcher
             //新版本元信息
             var versionMeta = new SnkVersionMeta
             {
-                version = resVersion
+                version = resVersion,
+                from = lastResVersion,
             };
             
             if (_compressor != null)
