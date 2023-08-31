@@ -5,11 +5,9 @@
         public static ISnkLogger Default { get; private set; }
         private static ISnkLoggerFactory _loggerFactory;
 
-        public static void InitializeLogging(ISnkLoggerFactory loggerFactory, string defaultCategoryName = "DEFAULT")
+        public static void InitializeLogging(ISnkLoggerFactory loggerFactory = null, string defaultCategoryName = "DEFAULT")
         {
-            if (loggerFactory == null)
-                return;
-            _loggerFactory = loggerFactory;
+            _loggerFactory = loggerFactory ?? new SnkConsoleLoggerFactory();
             Default = _loggerFactory.CreateLogger(defaultCategoryName);
         }
 
