@@ -6,10 +6,14 @@ namespace SnkFeatureKit.Patcher
     {
         public interface ISnkPatchController : System.IDisposable
         {
+            ISnkJsonParser jsonParser { get; }
+            
             string ChannelName { get; }
-            int AppVersion { get; }
+            int LocalAppVersion { get; }
+            int RemoteAppVersion { get; }
             ushort LocalResVersion { get; }
             ushort RemoteResVersion { get; }
+            
             SnkPatchControlSettings Settings { get; }
             long TotalDownloadSize { get; }
             long DownloadedSize { get; }
@@ -18,11 +22,12 @@ namespace SnkFeatureKit.Patcher
             long DownloadSpeed { get; }
 
             Task Initialize();
-            Task<long> TryUpdate();
-            //Task<(List<SnkSourceInfo>, List<string>)> PreviewDiff(ushort remoteResVersion);
+            long TryUpdate();
+            
             Task Apply(System.Func<Task<bool>> onExceptionCallBack);
-            bool SourceExists(string key, bool fromLocalResp = true);
-            bool TryGetSourceInfo(string key, bool fromLocalResp, out SnkSourceInfo sourceInfo);
+
+            void UpdateLocalResVersion(ushort resVersion);
+
         }
     }
 }
