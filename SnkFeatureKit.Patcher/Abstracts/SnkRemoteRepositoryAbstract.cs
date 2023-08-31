@@ -38,11 +38,11 @@ namespace SnkFeatureKit.Patcher
 
             private int _urlIndex;
             public string ExceptionString { get; private set; }
-            public int AppVersion { get; private set; }
+            public int AppVersion { get; private set; } = -1;
 
             ushort ISnkPatchRepository.ResVersion => _resVersion;
 
-            public int ResVersion { get; private set;}
+            public int ResVersion { get; private set;} = -1;
             public bool IsError { get; private set; }
             
             
@@ -79,7 +79,12 @@ namespace SnkFeatureKit.Patcher
             
             
             protected virtual ISnkDownloadTask CreateDownloadTask() => new SnkDownloadTask();
-     
+
+            protected abstract string RemoteManifestUrl { get; }
+
+            
+            
+            private List<SnkSourceInfo> _sourceInfoList = new List<SnkSourceInfo>();
 
             public virtual async Task Initialize(ISnkPatchController patchController)
             {
@@ -95,7 +100,10 @@ namespace SnkFeatureKit.Patcher
                         var content = SnkHttpWeb.Get(appVersionUrl);
                         if (string.IsNullOrEmpty(content))
                             throw new System.Exception("content is null or empty.");
+                        logger?.LogInfo($"AppVersionReqTask.Content:\n" + content);
                         AppVersionHistories = jsonParser.FromJson<List<int>>(content);
+                        if(AppVersionHistories != null && AppVersionHistories.Count > 0)
+                            AppVersion = AppVersionHistories[AppVersionHistories.Count - 1];
                     }
                     catch (Exception e)
                     {
@@ -111,7 +119,10 @@ namespace SnkFeatureKit.Patcher
                         var content = SnkHttpWeb.Get(resVersionUrl);
                         if (string.IsNullOrEmpty(content))
                             throw new System.Exception("content is null or empty.");
+                        logger?.LogInfo($"ResVersionReqTask.Content:\n" + content);
                         ResVersionHistories = jsonParser.FromJson<List<SnkVersionMeta>>(content);
+                        if(ResVersionHistories != null && ResVersionHistories.Count > 0)
+                            ResVersion = ResVersionHistories[ResVersionHistories.Count - 1].version;
                     }
                     catch (Exception e)
                     {
@@ -119,13 +130,35 @@ namespace SnkFeatureKit.Patcher
                         this.SetException(e, tag);
                     }
                 });
+
                 await Task.WhenAll(appVersionReqTask, resVersionReqTask).ConfigureAwait(false);
-                AppVersion = AppVersionHistories[AppVersionHistories.Count - 1];
-                ResVersion = ResVersionHistories[ResVersionHistories.Count - 1].version;
+
+                if (AppVersion <= 0 || ResVersion <= 0)
+                {
+                    var tag = $"AppVersion:{AppVersion}, ResVersion:{ResVersion}";
+                    this.SetException(new AggregateException($"appVersion or resVersion is error"), tag);
+                    return;
+                }
+
+                await Task.Run(async () =>
+                {
+                    try
+                    {   
+                        var content = await SnkHttpWeb.GetAsync(RemoteManifestUrl);
+                        this._sourceInfoList = jsonParser.FromJson<List<SnkSourceInfo>>(content);
+                        logger?.LogInfo($"RemoteManifestReqTask.Content:\n{content}");
+                    }
+                    catch (Exception exception)
+                    {
+                        var tag = $"web request remote {patchController.Settings.manifestFileName} failed. url:{RemoteManifestUrl}";
+                        this.SetException(exception, tag);
+                    }
+                });
+                
                 logger?.LogInfo($"AppVersion:{AppVersion}, ResVersion:{ResVersion}");
             }
 
-            public abstract List<SnkSourceInfo> GetSourceInfoList(ushort version);
+            public virtual List<SnkSourceInfo> GetSourceInfoList(ushort version) => this._sourceInfoList;
 
             protected virtual string GetCurrURL(bool moveNext = false)
             {
@@ -154,13 +187,8 @@ namespace SnkFeatureKit.Patcher
 
             public virtual void SetThreadTickIntervalMilliseconds(int intervalMilliseconds)
                 => this._threadTickInterval = intervalMilliseconds;
-            
-            public virtual void EnqueueDownloadQueue(string dirPath, string key, int resVersion)
-            {
-                var basicUrl = GetCurrURL();
-                var url = Path.Combine(basicUrl, patchController.ChannelName, AppVersion.ToString(), resVersion.ToString(), patchController.Settings.assetsDirName, key);
-                willDownloadTaskQueue.Enqueue(new Tuple<string, string, string>(url, Path.Combine(dirPath, key), key));
-            }
+
+            public abstract void EnqueueDownloadQueue(string dirPath, string key, int resVersion);
 
             private void StartRecordDownloadSpeed()
             {

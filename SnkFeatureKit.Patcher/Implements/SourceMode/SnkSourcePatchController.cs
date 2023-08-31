@@ -22,9 +22,8 @@ namespace SnkFeatureKit.Patcher
             private List<SnkSourceInfo> _addList;
             private List<string> _delList;
 
-            public SnkSourcePatchController(SnkPatchControlSettings settings, ISnkJsonParser jsonParser, int threadNumber) : base(new TLocalRepo(), new TRemoteRepo(), settings, jsonParser)
+            public SnkSourcePatchController(SnkPatchControlSettings settings, ISnkJsonParser jsonParser, int threadNumber = 12) : base(new TLocalRepo(), new TRemoteRepo(), settings, jsonParser, threadNumber)
             {
-                this.remoteRepo.SetDownloadThreadNumber(threadNumber);
             }
             
             public override long TryUpdate()
@@ -41,12 +40,12 @@ namespace SnkFeatureKit.Patcher
                 _addList.RemoveAll(t => t.version == 0);
 
                 if (_addList.Count > 0)
-                    return _addList.Sum(item => item.size);
+                    totalDownloadSize = _addList.Sum(item => item.size);
 
                 if (_delList.Count > 0)
-                    return -_delList.Count;
+                    totalDownloadSize = -_delList.Count;
 
-                return 0;
+                return totalDownloadSize;
             }
 
             public override async Task Apply(System.Func<Task<bool>> onExceptionCallBack)
@@ -76,7 +75,6 @@ namespace SnkFeatureKit.Patcher
                     {
                         var sourceInfo = _addList[i];
                         remoteRepo.EnqueueDownloadQueue(localRepo.LocalPath, sourceInfo.key, sourceInfo.version);
-                        totalDownloadSize += sourceInfo.size;
                     }
                 });
 
@@ -100,9 +98,7 @@ namespace SnkFeatureKit.Patcher
                 status = SNK_PATCH_CTRL_STATE.downloaded;
             }
 
-            public void OnPreDownloadTask(string key)
-            {
-            }
+    
 
             protected Tuple<List<SnkSourceInfo>, List<string>> PreviewDiff(ushort remoteResVersion)
             {

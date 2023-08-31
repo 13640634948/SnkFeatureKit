@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using SnkFeatureKit.Patcher.Abstracts;
-using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -11,28 +8,15 @@ namespace SnkFeatureKit.Patcher
     {
         public class SnkSourceRemoteRepository : SnkRemoteRepositoryAbstract
         {
-            private List<SnkSourceInfo> _sourceInfoList = new List<SnkSourceInfo>();
+            protected override string RemoteManifestUrl 
+                => Path.Combine(GetCurrURL(), patchController.ChannelName, AppVersion.ToString(), ResVersion.ToString(), patchController.Settings.manifestFileName);
 
-            public override async Task Initialize(ISnkPatchController patchController)
+            public override void EnqueueDownloadQueue(string dirPath, string key, int resVersion)
             {
-                await base.Initialize(patchController);
-                var url = "";
-                try
-                {
-                    url = Path.Combine(GetCurrURL(), patchController.ChannelName, AppVersion.ToString(), ResVersion.ToString(), patchController.Settings.manifestFileName);
-                    var content = await SnkHttpWeb.GetAsync(url);
-                    this._sourceInfoList = jsonParser.FromJson<List<SnkSourceInfo>>(content);
-                }
-                catch (Exception exception)
-                {
-                    var tag = $"web request remote {patchController.Settings.manifestFileName} failed. url:{url}";
-                    this.SetException(exception, tag);
-                }
+                var basicUrl = GetCurrURL();
+                var url = Path.Combine(basicUrl, patchController.ChannelName, AppVersion.ToString(), resVersion.ToString(), patchController.Settings.assetsDirName, key);
+                willDownloadTaskQueue.Enqueue(new Tuple<string, string, string>(url, Path.Combine(dirPath, key), key));
             }
-
-            public override List<SnkSourceInfo> GetSourceInfoList(ushort version)
-                => this._sourceInfoList;
-
         }
     }
 }

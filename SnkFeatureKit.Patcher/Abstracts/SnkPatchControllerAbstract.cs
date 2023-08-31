@@ -21,7 +21,6 @@ namespace SnkFeatureKit.Patcher
             public virtual string ChannelName => this.settings.channelName;
             public int LocalAppVersion  => this.localRepo.AppVersion;
             public int RemoteAppVersion => this.remoteRepo.AppVersion;
-            
             public virtual ushort LocalResVersion => this.localRepo.ResVersion;
             public virtual ushort RemoteResVersion => this.remoteRepo.ResVersion;
             public virtual int AppVersion => this.settings.appVersion;
@@ -48,13 +47,19 @@ namespace SnkFeatureKit.Patcher
             protected bool _initialized { get; private set; } = false;
             protected bool _disposed { get; private set; } = false;
 
-            protected SnkPatchControllerAbstract(ISnkLocalPatchRepository localRepo, ISnkRemotePatchRepository remoteRepo, SnkPatchControlSettings settings, ISnkJsonParser jsonParser)
+            protected SnkPatchControllerAbstract(ISnkLocalPatchRepository localRepo, ISnkRemotePatchRepository remoteRepo, SnkPatchControlSettings settings, ISnkJsonParser jsonParser, int threadNumber)
             {
                 this.localRepo = localRepo;
                 this.remoteRepo = remoteRepo;
                 this.settings = settings;
                 this.jsonParser = jsonParser;
                 this.logger = SnkLogHost.GetLogger(this.GetType().Name);
+
+                if (threadNumber > 32)
+                    threadNumber = 32;
+                if (threadNumber <= 0)
+                    threadNumber = 1;
+                this.remoteRepo.SetDownloadThreadNumber(threadNumber);
             }
             
             public virtual async Task Initialize()
@@ -109,6 +114,12 @@ namespace SnkFeatureKit.Patcher
             public abstract long TotalDownloadSize { get; }
             public abstract long TryUpdate();
             public abstract Task Apply(Func<Task<bool>> onExceptionCallBack);
+            public virtual void UpdateLocalResVersion(ushort resVersion)
+                => this.localRepo.UpdateLocalResVersion(resVersion);
+
+            public virtual void OnPreDownloadTask(string key)
+            {
+            }
         }
     }
 }

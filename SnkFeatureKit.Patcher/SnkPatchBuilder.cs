@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -79,7 +80,13 @@ namespace SnkFeatureKit.Patcher
                 resVersion = (ushort)(lastResVersion + 1);
 
                 //加载最新的资源列表
-                var lastResManifestPath = Path.Combine(appVersionPath, lastResVersion.ToString(), _settings.manifestFileName);
+                
+                var lastResManifestPath = "";
+                if(_compressor == null)
+                    lastResManifestPath = Path.Combine(appVersionPath, lastResVersion.ToString(), _settings.manifestFileName);
+                else
+                    lastResManifestPath = Path.Combine(appVersionPath, _settings.manifestFileName);
+                    
                 var fileInfo = new FileInfo(lastResManifestPath);
                 if (fileInfo.Exists)
                 {
@@ -90,8 +97,6 @@ namespace SnkFeatureKit.Patcher
             }
 
             var projResPath = Path.Combine(appVersionPath, resVersion.ToString());
-            if (Directory.Exists(projResPath) == false)
-                Directory.CreateDirectory(projResPath);
 
             //生成当前目标目录的资源信息列表
             var keyPathMapping = new Dictionary<string, string>();
@@ -129,37 +134,60 @@ namespace SnkFeatureKit.Patcher
             //新增资源，更新资源
             lastSourceInfoList.RemoveAll(a => addList.Exists(b => a.key == b.key));
             lastSourceInfoList.AddRange(addList);
-
+                
             //保存最新的资源清单
-            var manifestPath = Path.Combine(projResPath, this._settings.manifestFileName);
+            var manifestFileInfo = new FileInfo(Path.Combine(projResPath, this._settings.manifestFileName));
+            if(manifestFileInfo.Exists)
+                manifestFileInfo.Delete();
+            if(manifestFileInfo.Directory?.Exists == false)
+                manifestFileInfo.Directory.Create();
+            File.WriteAllText(manifestFileInfo.FullName, _jsonParser.ToJson(lastSourceInfoList));
 
-            File.WriteAllText(manifestPath, _jsonParser.ToJson(lastSourceInfoList));
+            if (_compressor != null)
+            {
+                var tmpManifestFilePath = Path.Combine(appVersionPath, manifestFileInfo.Name);
+                if(File.Exists(tmpManifestFilePath))
+                    File.Delete(tmpManifestFilePath);
+                manifestFileInfo.CopyTo(tmpManifestFilePath);
+            }
 
-            var willCopyFileList = addList;
-            willCopyFileList.RemoveAll(a => a.version == 0);
-            //复制资源文件
-            var patchAssetsDirPath = Path.Combine(projResPath, this._settings.assetsDirName);
-            SnkPatch.CopySourceTo(patchAssetsDirPath, willCopyFileList, keyPathMapping);
-
+            if (isHotUpdatePackage)
+            {
+                var willCopyFileList = addList;
+                willCopyFileList.RemoveAll(a => a.version == 0);
+                //复制资源文件
+                var patchAssetsDirPath = Path.Combine(projResPath, this._settings.assetsDirName);
+                SnkPatch.CopySourceTo(patchAssetsDirPath, willCopyFileList, keyPathMapping);
+            }
+            else
+            {
+                addList.Clear();
+            }
+            
             //新版本元信息
             var versionMeta = new SnkVersionMeta
             {
-                version = resVersion,
-                size = addList.Sum(a => a.size),
-                count = addList.Count,
+                version = resVersion
             };
             
             if (_compressor != null)
             {
-                var zipFile = Path.Combine(appVersionPath, $"patcher_{resVersion}.zip");
-                await _compressor.Compress(projResPath, zipFile);
-                if(clearSourceDir)
+                var zipFileInfo = new System.IO.FileInfo(Path.Combine(appVersionPath, $"patcher_{resVersion}.zip"));
+                await _compressor.Compress(projResPath, zipFileInfo.FullName);
+                if (clearSourceDir)
+                {
                     Directory.Delete(projResPath, true);
-                versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(zipFile);
+                }
+
+                versionMeta.size = zipFileInfo.Length;
+                versionMeta.count = zipFileInfo.Directory.GetFiles("*", SearchOption.TopDirectoryOnly).Length;
+                versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(zipFileInfo.FullName);
             }
             else
             {
-                versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(manifestPath);
+                versionMeta.size = addList.Sum(a => a.size);
+                versionMeta.count = addList.Count;
+                versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(manifestFileInfo.FullName);
             }
 
             resVersionList.Add(versionMeta);

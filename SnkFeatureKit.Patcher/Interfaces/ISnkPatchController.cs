@@ -25,7 +25,9 @@ namespace SnkFeatureKit.Patcher
             long TryUpdate();
             
             Task Apply(System.Func<Task<bool>> onExceptionCallBack);
-            
+
+            void UpdateLocalResVersion(ushort resVersion);
+
         }
     }
 }

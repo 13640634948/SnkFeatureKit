@@ -15,7 +15,7 @@ namespace SnkFeatureKit.Patcher
     {
         public static ISnkCodeGenerator S_CodeGenerator = new SnkMD5Generator();
 
-        public static List<SnkSourceInfo> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, ref int Count, ref int CurrNum, Dictionary<string,string> keyPathMapping = null)
+        public static List<SnkSourceInfo> GenerateSourceInfoList(ushort resVersion, ISnkFileFinder fileFinder, ref int count, ref int currNum, Dictionary<string,string> keyPathMapping = null, bool calculateMD5 = true)
         {
             if (fileFinder.TrySurvey(out var fileInfos) == false)
             {
@@ -23,12 +23,11 @@ namespace SnkFeatureKit.Patcher
                     SnkLogHost.Default.LogWarn("搜索目录文件失败。路径：{0}", fileFinder.SourceDirPath);
                 return null;
             }
-
             var sourceInfoList = new List<SnkSourceInfo>();
             var mapping = new Dictionary<string, string>();
             var dirInfo = new DirectoryInfo(fileFinder.SourceDirPath);
-            Count = fileInfos.Length;
-            CurrNum = 0;
+            count = fileInfos.Length;
+            currNum = 0;
             foreach (var fileInfo in fileInfos)
             {
                 var info = new SnkSourceInfo();
@@ -48,10 +47,11 @@ namespace SnkFeatureKit.Patcher
 
                 info.version = resVersion;
                 info.size = fileInfo.Length;
-                info.code = S_CodeGenerator.CalculateFileMD5(fileInfo.FullName);
+                if(calculateMD5)
+                    info.code = S_CodeGenerator.CalculateFileMD5(fileInfo.FullName);
                 sourceInfoList.Add(info);
                 mapping[info.key] = fileInfo.FullName;
-                CurrNum++;
+                currNum++;
             }
 
             if (keyPathMapping != null)

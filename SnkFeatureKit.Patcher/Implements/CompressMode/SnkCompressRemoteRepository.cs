@@ -1,15 +1,21 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
 using SnkFeatureKit.Patcher.Abstracts;
-using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher.Implements
 {
     public class SnkCompressRemoteRepository : SnkRemoteRepositoryAbstract
     {
-        public override List<SnkSourceInfo> GetSourceInfoList(ushort version)
+        protected override string RemoteManifestUrl 
+            => Path.Combine(GetCurrURL(), patchController.ChannelName, AppVersion.ToString(), patchController.Settings.manifestFileName);
+
+
+        public override void EnqueueDownloadQueue(string dirPath, string key, int resVersion)
         {
-            throw new NotImplementedException();
+            var basicUrl = GetCurrURL();
+            var fileName = $"patcher_{resVersion}.zip";
+            var url = Path.Combine(basicUrl, patchController.ChannelName, AppVersion.ToString(), fileName);
+            willDownloadTaskQueue.Enqueue(new Tuple<string, string, string>(url, Path.Combine(dirPath, fileName), fileName));
         }
     }
 }
