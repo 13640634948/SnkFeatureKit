@@ -48,7 +48,6 @@
         <Compile Include="Implements\CompressMode\SnkCompressLocalRepository.cs" />
         <Compile Include="Implements\CompressMode\SnkCompressPatchController.cs" />
         <Compile Include="Implements\CompressMode\SnkCompressRemoteRepository.cs" />
-        <Compile Include="Implements\SnkCompressor.cs" />
         <Compile Include="Implements\SnkDownloadTask.cs" />
         <Compile Include="Implements\SnkFileFinder.cs" />
         <Compile Include="Implements\SnkMD5Generator.cs" />

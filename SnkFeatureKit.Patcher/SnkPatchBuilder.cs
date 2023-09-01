@@ -175,7 +175,7 @@ namespace SnkFeatureKit.Patcher
             if (_compressor != null)
             {
                 var zipFileInfo = new System.IO.FileInfo(Path.Combine(appVersionPath, $"patcher_{resVersion}.zip"));
-                await _compressor.Compress(projResPath, zipFileInfo.FullName);
+                await Task.Run(()=>_compressor.Compress(projResPath, zipFileInfo.FullName)).ConfigureAwait(false);
                 versionMeta.size = zipFileInfo.Length;
                 versionMeta.count = System.IO.Directory.GetFiles(projResPath, "*", SearchOption.TopDirectoryOnly).Length;
                 versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(zipFileInfo.FullName);
