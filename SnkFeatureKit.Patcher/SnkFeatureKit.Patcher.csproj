@@ -39,19 +39,17 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Abstracts\SnkLocalRepositoryAbstract.cs" />
         <Compile Include="Abstracts\SnkPatchControllerAbstract.cs" />
         <Compile Include="Abstracts\SnkRemoteRepositoryAbstract.cs" />
         <Compile Include="Exceptions\SnkAppVersionException.cs" />
         <Compile Include="Exceptions\SnkException.cs" />
         <Compile Include="Extensions\StringExtension.cs" />
-        <Compile Include="Implements\CompressMode\SnkCompressLocalRepository.cs" />
         <Compile Include="Implements\CompressMode\SnkCompressPatchController.cs" />
         <Compile Include="Implements\CompressMode\SnkCompressRemoteRepository.cs" />
         <Compile Include="Implements\SnkDownloadTask.cs" />
         <Compile Include="Implements\SnkFileFinder.cs" />
+        <Compile Include="Implements\SnkLocalRepository.cs" />
         <Compile Include="Implements\SnkMD5Generator.cs" />
-        <Compile Include="Implements\SourceMode\SnkSourceLocalRepository.cs" />
         <Compile Include="Implements\SourceMode\SnkSourcePatchController.cs" />
         <Compile Include="Implements\SourceMode\SnkSourceRemoteRepository.cs" />
         <Compile Include="Interfaces\ISnkCodeGenerator.cs" />

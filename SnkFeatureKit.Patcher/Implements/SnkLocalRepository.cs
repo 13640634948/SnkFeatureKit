@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SnkFeatureKit.Patcher.Interfaces;
 
-namespace SnkFeatureKit.Patcher.Interfaces
+namespace SnkFeatureKit.Patcher.Implements
 {
-    public abstract class SnkLocalRepositoryAbstract : ISnkLocalPatchRepository
+    public class SnkLocalRepository : ISnkLocalPatchRepository
     {
         private bool _disposed = false;
 
@@ -20,11 +21,19 @@ namespace SnkFeatureKit.Patcher.Interfaces
         protected List<SnkSourceInfo> sourceInfoList = new List<SnkSourceInfo>();
 
         protected SnkLocalArchive localArchive;
-        
+        protected virtual bool CalculateMD5 => true;
+
         public bool IsError { get; }
         public string ExceptionString { get; }
 
-        protected abstract List<SnkSourceInfo> LoadSourceInfo();
+        protected virtual List<SnkSourceInfo> LoadSourceInfo()
+        {
+            var count = 0;
+            var currNum = 0;
+            var finder = new SnkFileFinder(this.LocalPath);
+            return SnkPatch.GenerateSourceInfoList(0, finder, ref count, ref currNum, calculateMD5:CalculateMD5) ?? new List<SnkSourceInfo>();
+        }
+
 
         public virtual Task Initialize(ISnkPatchController patchController)
         {
@@ -55,7 +64,7 @@ namespace SnkFeatureKit.Patcher.Interfaces
             System.IO.File.WriteAllText(ArchiveFilePath, jsonParser.ToJson(this.localArchive));
         }
         
-        ~SnkLocalRepositoryAbstract()
+        ~SnkLocalRepository()
         {
             Dispose(false);
         }
