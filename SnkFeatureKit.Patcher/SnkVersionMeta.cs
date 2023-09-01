@@ -6,8 +6,9 @@ namespace SnkFeatureKit.Patcher
         public long size;
         public int count;
         public string code;
+        public ushort from;
         
         public override string ToString()
-            => $"ver:{version}, size:{size}, count:{count}, code:{code}";
+            => $"ver:{version}, size:{size}, count:{count}, code:{code}, from:{from}";
     }
 }

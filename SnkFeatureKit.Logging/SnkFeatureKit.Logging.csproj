@@ -42,6 +42,8 @@
         <Compile Include="ISnkLogger.cs" />
         <Compile Include="ISnkLoggerFactory.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="SnkConsoleLogger.cs" />
+        <Compile Include="SnkConsoleLoggerFactory.cs" />
         <Compile Include="SnkLoggerAbstract.cs" />
         <Compile Include="SnkLoggerExtensions.cs" />
         <Compile Include="SnkLoggerFactoryAbstract.cs" />

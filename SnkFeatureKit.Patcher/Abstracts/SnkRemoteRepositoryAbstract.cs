@@ -40,9 +40,8 @@ namespace SnkFeatureKit.Patcher
             public string ExceptionString { get; private set; }
             public int AppVersion { get; private set; } = -1;
 
-            ushort ISnkPatchRepository.ResVersion => _resVersion;
+            public ushort ResVersion { get; private set;} = 0;
 
-            public int ResVersion { get; private set;} = -1;
             public bool IsError { get; private set; }
             
             
@@ -62,7 +61,6 @@ namespace SnkFeatureKit.Patcher
             private int _maxThreadNumber;
             private bool _disposed;
             private int _threadTickInterval = 100;
-            private ushort _resVersion;
 
             public virtual long DownloadedSize
             {
@@ -81,8 +79,6 @@ namespace SnkFeatureKit.Patcher
             protected virtual ISnkDownloadTask CreateDownloadTask() => new SnkDownloadTask();
 
             protected abstract string RemoteManifestUrl { get; }
-
-            
             
             private List<SnkSourceInfo> _sourceInfoList = new List<SnkSourceInfo>();
 

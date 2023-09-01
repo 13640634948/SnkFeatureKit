@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SnkFeatureKit.Patcher
 {
@@ -6,8 +6,9 @@ namespace SnkFeatureKit.Patcher
     {
         public interface ISnkCompressor
         {
-            Task Compress(string folderPath, string zipPath);
-            Task Decompress(string file, string dir);
+            void Compress(string folderPath, string zipPath);
+            void Decompress(string file, string dir);
+            void ExtractEntry(string file, string dir, List<string> keyList);
         }
     }    
 }

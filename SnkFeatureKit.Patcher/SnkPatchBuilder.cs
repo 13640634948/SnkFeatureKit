@@ -69,14 +69,15 @@ namespace SnkFeatureKit.Patcher
 
             var lastSourceInfoList = new List<SnkSourceInfo>();
             ushort resVersion = 1;
+            ushort lastResVersion = 0;
 
-            var appVersionList = LoadAppVersionInfos(appVersionPath);
+            var appVersionList = LoadAppVersionInfos(channelPath);
             var resVersionList = LoadResVersionInfos(appVersionPath);
 
             var isHotUpdatePackage = resVersionList.Count > 0;
             if (isHotUpdatePackage)
             {
-                var lastResVersion = resVersionList.Last().version;
+                lastResVersion = resVersionList.Last().version;
                 resVersion = (ushort)(lastResVersion + 1);
 
                 //加载最新的资源列表
@@ -167,21 +168,19 @@ namespace SnkFeatureKit.Patcher
             //新版本元信息
             var versionMeta = new SnkVersionMeta
             {
-                version = resVersion
+                version = resVersion,
+                from = lastResVersion,
             };
             
             if (_compressor != null)
             {
                 var zipFileInfo = new System.IO.FileInfo(Path.Combine(appVersionPath, $"patcher_{resVersion}.zip"));
-                await _compressor.Compress(projResPath, zipFileInfo.FullName);
-                if (clearSourceDir)
-                {
-                    Directory.Delete(projResPath, true);
-                }
-
+                await Task.Run(()=>_compressor.Compress(projResPath, zipFileInfo.FullName)).ConfigureAwait(false);
                 versionMeta.size = zipFileInfo.Length;
-                versionMeta.count = zipFileInfo.Directory.GetFiles("*", SearchOption.TopDirectoryOnly).Length;
+                versionMeta.count = System.IO.Directory.GetFiles(projResPath, "*", SearchOption.TopDirectoryOnly).Length;
                 versionMeta.code = SnkPatch.S_CodeGenerator.CalculateFileMD5(zipFileInfo.FullName);
+                if (clearSourceDir)
+                    Directory.Delete(projResPath, true);
             }
             else
             {
