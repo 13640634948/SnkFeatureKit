@@ -6,10 +6,9 @@ namespace SnkFeatureKit.Patcher.Interfaces
 {
     public abstract class SnkLocalRepositoryAbstract : ISnkLocalPatchRepository
     {
-        protected const string LOCAL_ARCHIVE_FILENAME  = "archive.json";
         private bool _disposed = false;
 
-        protected virtual string ArchiveFilePath => LOCAL_ARCHIVE_FILENAME;
+        protected virtual string ArchiveFilePath => patchController.Settings.localArchiveFileName;
 
         protected ISnkPatchController patchController { get; private set; }
         protected ISnkJsonParser jsonParser { get; private set; }

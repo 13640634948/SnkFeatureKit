@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using SnkFeatureKit.Logging;
+using SnkFeatureKit.Patcher.Exceptions;
 using SnkFeatureKit.Patcher.Interfaces;
 
 namespace SnkFeatureKit.Patcher
@@ -86,6 +87,12 @@ namespace SnkFeatureKit.Patcher
                     throw new Exception("No Initialize or Initializing");
                 }
             }
+            
+            protected virtual void ValidityAppVersion()
+            {
+                if (this.RemoteAppVersion > this.LocalAppVersion)
+                    throw new SnkAppVersionException(this.RemoteAppVersion);
+            }
 
             ~SnkPatchControllerAbstract()
             {
@@ -112,7 +119,9 @@ namespace SnkFeatureKit.Patcher
             }
             
             public abstract long TotalDownloadSize { get; }
+
             public abstract long TryUpdate();
+
             public abstract Task Apply(Func<Task<bool>> onExceptionCallBack);
             public virtual void UpdateLocalResVersion(ushort resVersion)
                 => this.localRepo.UpdateLocalResVersion(resVersion);

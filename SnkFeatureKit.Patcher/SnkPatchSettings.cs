@@ -18,6 +18,11 @@ namespace SnkFeatureKit.Patcher
         public string resVersionInfoFileName = "res_version.json";
 
         /// <summary>
+        /// 本地存档信息
+        /// </summary>
+        public string localArchiveFileName = "archive.json";
+        
+        /// <summary>
         /// 版本资源中间目录
         /// </summary>
         public string assetsDirName = "assets";

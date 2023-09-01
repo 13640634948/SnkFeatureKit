@@ -25,6 +25,7 @@ namespace SnkFeatureKit.Patcher.Implements
         public override long TryUpdate()
         {
             ValidityInitialization();
+            ValidityAppVersion();
             
             status = SNK_PATCH_CTRL_STATE.preview_diff_begin;
             _upgradeRouteList = CalculateUpgradeRoute();

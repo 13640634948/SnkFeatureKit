@@ -29,7 +29,8 @@ namespace SnkFeatureKit.Patcher
             public override long TryUpdate()
             {
                 ValidityInitialization();
-
+                ValidityAppVersion();
+                
                 status = SNK_PATCH_CTRL_STATE.preview_diff_begin;
                 var tuple = PreviewDiff(this.RemoteResVersion);
                 _addList = tuple.Item1;
