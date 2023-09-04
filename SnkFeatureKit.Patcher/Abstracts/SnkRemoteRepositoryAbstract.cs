@@ -82,14 +82,10 @@ namespace SnkFeatureKit.Patcher
             
             private List<SnkSourceInfo> _sourceInfoList = new List<SnkSourceInfo>();
 
-            public virtual async Task Initialize(ISnkPatchController patchController)
+            public async Task RequestAppVersionHistories(string channelUrl)
             {
-                this.patchController = patchController;
-                var rootUrl = Path.Combine(GetCurrURL(), patchController.ChannelName);
-                var appVersionUrl = Path.Combine(rootUrl, patchController.Settings.appVersionInfoFileName);
-                var resVersionUrl = Path.Combine(rootUrl, patchController.Settings.appVersion.ToString(), patchController.Settings.resVersionInfoFileName);
-
-                var appVersionReqTask = Task.Run(() =>
+                var appVersionUrl = Path.Combine(channelUrl, patchController.Settings.appVersionInfoFileName);
+                await Task.Run(() =>
                 {
                     try
                     {
@@ -107,8 +103,12 @@ namespace SnkFeatureKit.Patcher
                         this.SetException(e, tag);
                     }
                 });
-                
-                var resVersionReqTask = Task.Run(() =>
+            }
+
+            public async Task RequestResVersionHistories(string channelUrl)
+            {
+                var resVersionUrl = Path.Combine(channelUrl, AppVersion.ToString(), patchController.Settings.resVersionInfoFileName);
+                await Task.Run(() =>
                 {
                     try
                     {
@@ -126,23 +126,17 @@ namespace SnkFeatureKit.Patcher
                         this.SetException(e, tag);
                     }
                 });
+            }
 
-                await Task.WhenAll(appVersionReqTask, resVersionReqTask).ConfigureAwait(false);
-
-                if (AppVersion <= 0 || ResVersion <= 0)
-                {
-                    var tag = $"AppVersion:{AppVersion}, ResVersion:{ResVersion}";
-                    this.SetException(new AggregateException($"appVersion or resVersion is error"), tag);
-                    return;
-                }
-
+            public async Task RequestManifest()
+            {
                 await Task.Run(async () =>
                 {
                     try
                     {   
                         var content = await SnkHttpWeb.GetAsync(RemoteManifestUrl);
                         this._sourceInfoList = jsonParser.FromJson<List<SnkSourceInfo>>(content);
-                        logger?.LogInfo($"RemoteManifestReqTask.Content:\n{content}");
+                        //logger?.LogInfo($"RemoteManifestReqTask.Content:\n{content}");
                     }
                     catch (Exception exception)
                     {
@@ -150,8 +144,32 @@ namespace SnkFeatureKit.Patcher
                         this.SetException(exception, tag);
                     }
                 });
-                
-                logger?.LogInfo($"AppVersion:{AppVersion}, ResVersion:{ResVersion}");
+            }
+
+            public virtual async Task Initialize(ISnkPatchController patchController)
+            {
+                this.patchController = patchController;
+                try
+                {
+                    var channelName = Path.Combine(GetCurrURL(), patchController.ChannelName);
+                    await RequestAppVersionHistories(channelName);
+                    if (AppVersion <= 0)
+                    {
+                        throw new System.ArgumentException($"AppVersion:{AppVersion} is error, cannot be 0");
+                    }
+                    await RequestResVersionHistories(channelName);
+                    if (ResVersion <= 0)
+                    {
+                        throw new System.ArgumentException($"ResVersion:{ResVersion} is error, cannot be 0");
+                    }
+                    await RequestManifest();
+                    logger?.LogInfo($"AppVersion:{AppVersion}, ResVersion:{ResVersion}");
+                }
+                catch (Exception e)
+                {
+                    var tag = $"SnkRemoteRepositoryAbstract.Initialize()";
+                    this.SetException(new AggregateException(e.Message + "\n" + e.StackTrace), tag);
+                }
             }
 
             public virtual List<SnkSourceInfo> GetSourceInfoList(ushort version) => this._sourceInfoList;
