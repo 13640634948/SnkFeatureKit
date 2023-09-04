@@ -6,9 +6,10 @@ namespace SnkFeatureKit.Patcher
     {
         public interface ISnkCompressor
         {
-            void Compress(string folderPath, string zipPath);
-            void Decompress(string file, string dir);
-            void ExtractEntry(string file, string dir, List<string> keyList);
+            void Compress(string destinationDirectoryName, string sourceArchiveFileName);
+            void Decompress(string sourceArchiveFileName, string destinationDirectoryName);
+            void EntryExtractToFile(string sourceArchiveFileName, string destinationDirectoryName, List<string> entryKeyList);
+            List<string> GetEntryKeyList(string sourceArchiveFileName);
         }
     }    
 }
