@@ -52,10 +52,12 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Abstracts\SnkStorage.cs" />
+        <Compile Include="Extensions\StringExtension.cs" />
         <Compile Include="Implements\SnkBFSStorage.cs" />
         <Compile Include="Implements\SnkCOSStorage.cs" />
         <Compile Include="Implements\SnkOBSStorage.cs" />
         <Compile Include="Implements\SnkOSSStorage.cs" />
+        <Compile Include="Interfaces\ISnkJsonParser.cs" />
         <Compile Include="Interfaces\ISnkLocalStorage.cs" />
         <Compile Include="Interfaces\ISnkStorage.cs" />
         <Compile Include="OnProgressCallback.cs" />
@@ -72,6 +74,10 @@
       <ProjectReference Include="..\SnkFeatureKit.Logging\SnkFeatureKit.Logging.csproj">
         <Project>{4b7f62ce-bb42-407a-a5f8-bab5058a2718}</Project>
         <Name>SnkFeatureKit.Logging</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\SnkFeatureKit.Patcher\SnkFeatureKit.Patcher.csproj">
+        <Project>{3462f27e-7508-48d4-aeb4-0d4e046ad316}</Project>
+        <Name>SnkFeatureKit.Patcher</Name>
       </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
